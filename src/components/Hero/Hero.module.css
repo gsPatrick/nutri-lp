@@ -1,0 +1,180 @@
+.hero {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background-color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    /* Keeps image at bottom */
+}
+
+/* New Background - Spotlight Studio */
+.bgSolid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Gradient mimicking a spotlight on a wall behind subject */
+    background: radial-gradient(circle at 50% 50%, #2a3d35 0%, #050505 70%);
+    z-index: 0;
+    opacity: 1;
+}
+
+.bgGradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    /* Fade out bottom to blend with next section or just darken feet */
+    background: linear-gradient(to top, #000 0%, transparent 100%);
+    z-index: 2;
+}
+
+/* Layout Grid */
+.magazineContainer {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    max-width: 1600px;
+    margin: 0 auto;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+}
+
+/* Typography - Title Behind */
+.titleWrapper {
+    position: absolute;
+    top: 12%;
+    /* Moved up from 18% to avoid overlap with head */
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+.hugeTitle {
+    font-family: var(--font-heading);
+    /* Reduced by ~10% as requested */
+    font-size: clamp(5.4rem, 18vw, 16rem);
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, 0.15);
+    /* Subtler stroke */
+    letter-spacing: -0.02em;
+    line-height: 0.8;
+    white-space: nowrap;
+    text-align: center;
+}
+
+/* Image - STRICT CENTERING */
+.imageWrapper {
+    position: absolute;
+    bottom: 0;
+    /* Removed left: 50% and transform as requested for flexbox centering */
+    height: 85vh;
+    /* Adjust if cut off */
+    z-index: 3;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    pointer-events: none;
+    /* Let clicks pass */
+}
+
+.heroImage {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    /* Optional: If image has baked shadow, remove this filter. 
+       If cutout is sharp, this shadow helps ground it. */
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5));
+}
+
+/* Content floating - Simplified position */
+.contentLayer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 50;
+    pointer-events: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 5% 5% 5%;
+    /* Padding from edges */
+}
+
+/* Left side content */
+.floatingContent {
+    pointer-events: auto;
+    text-align: left;
+    max-width: 350px;
+}
+
+.subtitle {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 2rem;
+    font-weight: 300;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+}
+
+.ctaButton {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: white;
+    color: black;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 2px;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    border-radius: 50px;
+    /* Pill shape is trendier */
+}
+
+.ctaButton:hover {
+    background: var(--accent);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .hugeTitle {
+        font-size: 20vw;
+        top: 25%;
+        white-space: normal;
+        -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
+    }
+
+    .imageWrapper {
+        height: 65vh;
+        left: 50%;
+    }
+
+    .floatingContent {
+        width: 100%;
+        max-width: none;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .contentLayer {
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        padding-bottom: 2rem;
+    }
+}

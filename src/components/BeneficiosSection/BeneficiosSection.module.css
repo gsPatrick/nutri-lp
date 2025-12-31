@@ -1,0 +1,161 @@
+.section {
+    padding: 6rem 0 8rem 0;
+    /* Extra bottom for divider */
+    background-color: #f8f8f8;
+    position: relative;
+}
+
+/* Diagonal Divider at bottom to next section (dark) */
+.section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(to bottom right, transparent 49.5%, var(--primary-green) 50%);
+    pointer-events: none;
+}
+
+.container {
+    width: 90%;
+    max-width: var(--container-width);
+    margin: 0 auto;
+}
+
+.header {
+    margin-bottom: 5rem;
+    max-width: 600px;
+}
+
+.label {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.85rem;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.title {
+    font-size: 3rem;
+    font-family: var(--font-heading);
+    color: #1a1a1a;
+    line-height: 1.1;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+/* Base Card Style - NOW UNIFIED GREEN */
+.card {
+    background: linear-gradient(135deg, var(--primary-green) 0%, #1a3c2f 100%);
+    color: white;
+    padding: 2rem;
+    /* Reduced padding slightly as requested */
+    border-radius: 12px;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    min-height: 250px;
+    /* Ensure uniform height feel */
+}
+
+/* Sheen Effect */
+.card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.1), transparent 60%);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 40px -10px rgba(46, 139, 106, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
+    z-index: 2;
+    /* Pop over others */
+}
+
+.iconWrapper {
+    width: 50px;
+    /* Smaller icon wrapper */
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0.15);
+    /* Glassy white */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.card:hover .iconWrapper {
+    background-color: white;
+    color: var(--primary-green);
+    transform: scale(1.1) rotate(5deg);
+}
+
+.cardTitle {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    /* Slightly smaller */
+    margin-bottom: 0.8rem;
+    color: white;
+    position: relative;
+    z-index: 2;
+}
+
+.cardText {
+    color: rgba(255, 255, 255, 0.85);
+    /* White text */
+    line-height: 1.5;
+    font-weight: 300;
+    font-size: 0.95rem;
+    /* Slightly smaller */
+    position: relative;
+    z-index: 2;
+}
+
+/* Bento Grid Spans */
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+        /* Auto rows handled by grid flow */
+    }
+
+    .large {
+        grid-column: span 2;
+        grid-row: span 2;
+    }
+
+    .large .cardTitle {
+        font-size: 2rem;
+    }
+
+    .large .cardText {
+        font-size: 1.1rem;
+    }
+
+    .medium {
+        grid-column: span 2;
+    }
+
+    /* Small is default (span 1) */
+}

@@ -1,0 +1,88 @@
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1.5rem 0;
+    z-index: 100;
+    transition: background-color 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+}
+
+.scrolled {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 1rem 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.container {
+    width: 90%;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    /* Default to white for Hero */
+    transition: color 0.3s ease;
+}
+
+.scrolled .logo {
+    color: var(--text-primary);
+}
+
+.highlight {
+    color: var(--primary-green);
+}
+
+.nav {
+    display: none;
+}
+
+.navList {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+}
+
+.navLink {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    /* White for Hero */
+    transition: color 0.3s ease;
+}
+
+.scrolled .navLink {
+    color: var(--text-secondary);
+}
+
+.navLink:hover {
+    color: var(--primary-green);
+}
+
+.ctaButton {
+    padding: 0.6rem 1.5rem;
+    background-color: var(--primary-green);
+    color: white;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.ctaButton:hover {
+    background-color: #2ea07b;
+    transform: translateY(-2px);
+}
+
+@media (min-width: 768px) {
+    .nav {
+        display: block;
+    }
+}

@@ -1,0 +1,12 @@
+.canvasWrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    /* Above background image overlay, below text */
+    pointer-events: none;
+    /* Let mouse pass through to underlying elements if needed, but we used mouse coords in canvas which work globally usually or need events */
+    /* mix-blend-mode removed for safety */
+}

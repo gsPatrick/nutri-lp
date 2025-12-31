@@ -1,0 +1,143 @@
+.section {
+    padding: 6rem 0;
+    background-color: #f8f8f8;
+    /* Light cream */
+    color: #1a1a1a;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Diagonal Divider at bottom */
+.section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(to bottom right, transparent 49.5%, #0a0a0a 50%);
+    pointer-events: none;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    max-width: 1400px;
+    /* Slightly contained for reading */
+    margin: 0 auto;
+    gap: 4rem;
+    padding: 0 2rem;
+}
+
+/* Image Column - No more cutoffs */
+.imageColumn {
+    position: relative;
+    height: auto;
+    min-height: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.imageWrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 4px;
+    /* Slight softening or keep sharp */
+    overflow: hidden;
+    /* Optional: Shadow for depth */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Cover is usually best, but... */
+    object-position: top center;
+    /* Focus on face */
+    /* Remove the 120% height hack for parallax if it breaks things */
+}
+
+/* Text Column - Clean & Editorial */
+.textColumn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.contentBox {
+    /* Removed the white box overlay style, making it clean against background */
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+    max-width: 600px;
+}
+
+.heading {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    line-height: 1.1;
+    color: #1a1a1a;
+    margin-bottom: 2rem;
+}
+
+.italic {
+    font-style: italic;
+    font-family: 'Playfair Display', serif;
+    color: var(--primary-green);
+}
+
+.separator {
+    width: 80px;
+    height: 1px;
+    background-color: var(--accent);
+    /* darker line */
+    margin-bottom: 2rem;
+}
+
+.text {
+    font-family: var(--font-body);
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: #4a4a4a;
+    margin-bottom: 2rem;
+    font-weight: 300;
+}
+
+.highlight {
+    color: var(--primary-green);
+    font-weight: 600;
+}
+
+.signature {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    margin-top: 1rem;
+    color: #1a1a1a;
+    border-top: 1px solid #ddd;
+    display: inline-block;
+    padding-top: 1rem;
+}
+
+@media (min-width: 1024px) {
+    .grid {
+        grid-template-columns: 1fr 1fr;
+        /* True Split Screen */
+        align-items: center;
+        /* Center vertically */
+        height: auto;
+    }
+
+    .imageColumn {
+        height: 700px;
+        /* Fixed elegant height */
+        padding-right: 2rem;
+    }
+
+    .textColumn {
+        padding-left: 2rem;
+    }
+}

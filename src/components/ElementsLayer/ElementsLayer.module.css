@@ -1,0 +1,16 @@
+.layer {
+    position: absolute;
+    top: 0;
+    /* Adjust placement as needed in parent layout or relative to sections */
+    left: 0;
+    width: 100%;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
