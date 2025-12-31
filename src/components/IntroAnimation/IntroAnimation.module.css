@@ -1,0 +1,72 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #0a0a0a;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.greeting {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+.titleWrapper {
+    position: relative;
+    padding: 1rem 0;
+}
+
+.title {
+    font-family: var(--font-heading);
+    font-size: clamp(3rem, 10vw, 6rem);
+    color: var(--primary-green);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-align: center;
+    background: linear-gradient(to right, #fff, var(--primary-green));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.line {
+    height: 1px;
+    background: var(--accent);
+    margin: 0 auto;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.tagline {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: white;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+/* Optional curtain if using scale reveal, but overlay opacity handles fade */
+.curtain {
+    display: none;
+    /* Using opacity fade instead for simplicity */
+}

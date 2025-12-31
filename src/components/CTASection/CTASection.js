@@ -12,8 +12,8 @@ const features = [
     "Suporte direto comigo"
 ];
 
-// Countdown Target: 06/01/2026 (future date)
-const targetDate = new Date('2026-01-06T00:00:00');
+// Countdown Target: 12/01/2026 (Updated per request)
+const targetDate = new Date('2026-01-12T00:00:00');
 
 function useCountdown(targetDate) {
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -66,7 +66,7 @@ export default function CTASection() {
                     </div>
 
                     {/* Target Date Display */}
-                    <p className={styles.targetDate}>Próxima turma inicia em: <strong>06 de Janeiro de 2026</strong></p>
+                    <p className={styles.targetDate}>Próxima turma inicia em <strong>12/01</strong></p>
 
                     {/* Countdown Timer */}
                     <div className={styles.countdownContainer}>
@@ -93,11 +93,11 @@ export default function CTASection() {
 
                     <h2 className={styles.headline}>
                         Pronta para transformar<br />
-                        <span className={styles.highlight}>sua relação com seu corpo?</span>
+                        <span className={styles.highlight}>sua relação com o seu corpo?</span>
                     </h2>
 
                     <p className={styles.subheadline}>
-                        Junte-se ao grupo exclusivo e dê o primeiro passo para uma vida mais leve.
+                        Garanta sua vaga e dê o primeiro passo para uma vida mais leve.
                     </p>
 
                     {/* Pricing Card */}
@@ -111,7 +111,7 @@ export default function CTASection() {
                             <span className={styles.amount}>289</span>
                             <span className={styles.cents}>,00</span>
                         </p>
-                        <p className={styles.paymentNote}>ou 12x de R$ 28,80</p>
+                        <p className={styles.paymentNote}>(em até 6x de R$ 48,17 sem juros)</p>
 
                         {/* Feature List */}
                         <ul className={styles.featureList}>
@@ -123,6 +123,9 @@ export default function CTASection() {
                             ))}
                         </ul>
 
+                        {/* Refund Note */}
+                        <p className={styles.refundNote}>Produto sem reembolso</p>
+
                         <a href="#" className={styles.ctaBtn}>
                             Garantir Minha Vaga Agora
                         </a>
@@ -131,7 +134,7 @@ export default function CTASection() {
                         <div className={styles.trustBadges}>
                             <div className={styles.badge}>
                                 <Shield size={20} />
-                                <span>7 dias de garantia</span>
+                                <span>Compra Segura</span>
                             </div>
                             <div className={styles.badge}>
                                 <Users size={20} />

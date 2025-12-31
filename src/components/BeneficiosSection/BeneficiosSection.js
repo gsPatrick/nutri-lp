@@ -20,7 +20,7 @@ const features = [
     {
         icon: Zap,
         title: "Energia Real",
-        text: "Chega de cansaço crônico. Recupere sua disposição diária.",
+        text: "Chega de viver cansada. Recupere sua disposição no dia a dia.",
         size: "small"
     },
     {

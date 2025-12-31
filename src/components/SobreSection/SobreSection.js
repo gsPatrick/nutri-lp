@@ -41,7 +41,7 @@ export default function SobreSection() {
                             </p>
                             <br />
                             <p>
-                                A inflamação crônica não é apenas um incômodo — é o que impede seus resultados. O <strong>Gut Reset</strong> foi desenhado exatamente para quebrar esse ciclo de forma definitiva.
+                                Um intestino inflamado impede seus resultados. O Gut Reset foi desenhado para reorganizar o corpo e fazer ele voltar a responder.
                             </p>
                         </div>
                         <div className={styles.signature}>Nutri. LP</div>

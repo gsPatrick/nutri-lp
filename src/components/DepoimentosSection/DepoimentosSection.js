@@ -17,7 +17,17 @@ const images = Array.from({ length: 12 }, (_, i) => ({
   CSS Animation is smoother for infinite marquees.
 */
 
-export default function DepoimentosSection() {
+export default function DepoimentosSection({ images = [] }) {
+    // If no images provided, fallback to placeholders or show empty state
+    // But for better UX, if empty, we might assume user hasn't uploaded yet.
+    // Let's create a safe array. If empty, maybe show 1-2 generic placeholders or nothing.
+    const hasImages = images.length > 0;
+
+    // Duplicate images for infinite loop effect (at least 4x to fill width if few images)
+    const displayImages = hasImages
+        ? [...images, ...images, ...images, ...images]
+        : [];
+
     return (
         <section className={styles.section} id="depoimentos">
             <div className={styles.header}>
@@ -25,33 +35,36 @@ export default function DepoimentosSection() {
                 <p className={styles.subtitle}>Junte-se a centenas de vidas transformadas.</p>
             </div>
 
-            <div className={styles.marqueeContainer}>
-                {/* Track 1 - Moving Left */}
-                <div className={styles.marqueeTrack}>
-                    {/* Duplicate 3 times for seamless loop */}
-                    {[...images, ...images, ...images].map((img, idx) => (
-                        <div key={`t1-${idx}`} className={styles.imageCard}>
-                            <div className={styles.placeholder}>
-                                <span className={styles.placeholderText}>Resultado #{idx + 1}</span>
-                            </div>
-                            {/* <img src={img.src} alt="Depoimento" /> */}
+            {hasImages ? (
+                <>
+                    <div className={styles.marqueeContainer}>
+                        {/* Track 1 - Moving Left */}
+                        <div className={styles.marqueeTrack}>
+                            {displayImages.map((src, idx) => (
+                                <div key={`t1-${idx}`} className={styles.imageCard}>
+                                    <img src={src} alt={`Depoimento ${idx}`} loading="lazy" />
+                                </div>
+                            ))}
                         </div>
-                    ))}
-                </div>
-            </div>
+                    </div>
 
-            <div className={styles.marqueeContainer} style={{ marginTop: '2rem' }}>
-                {/* Track 2 - Moving Right (Optional or same direction) */}
-                <div className={`${styles.marqueeTrack} ${styles.reverse}`}>
-                    {[...images, ...images, ...images].map((img, idx) => (
-                        <div key={`t2-${idx}`} className={styles.imageCard}>
-                            <div className={styles.placeholder} style={{ background: '#f0f0f0' }}>
-                                <span className={styles.placeholderText}>Depoimento #{idx + 1}</span>
-                            </div>
+                    <div className={styles.marqueeContainer} style={{ marginTop: '2rem' }}>
+                        {/* Track 2 - Moving Right (Reverse) */}
+                        {/* For visual variety, we can reverse the array or offset it */}
+                        <div className={`${styles.marqueeTrack} ${styles.reverse}`}>
+                            {[...displayImages].reverse().map((src, idx) => (
+                                <div key={`t2-${idx}`} className={styles.imageCard}>
+                                    <img src={src} alt={`Depoimento ${idx}`} loading="lazy" />
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    </div>
+                </>
+            ) : (
+                <div className={styles.emptyState}>
+                    <p>Adicione imagens na pasta <code>public/depoimentos</code> para vê-las aqui.</p>
                 </div>
-            </div>
+            )}
 
         </section>
     );

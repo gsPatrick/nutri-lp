@@ -50,12 +50,10 @@ export default function Hero() {
                         transition={{ delay: 0.8, duration: 1 }}
                     >
                         <p className={styles.subtitle}>
-                            15 dias para destravar seu<br />
-                            emagrecimento e devolver<br />
-                            sua energia vital.
+                            15 dias para desinflamar o corpo, destravar o emagrecimento e devolver sua energia vital.
                         </p>
                         <a href="#contato" className={styles.ctaButton}>
-                            Entrar no Grupo VIP
+                            Garantir minha vaga
                         </a>
                     </motion.div>
                 </div>

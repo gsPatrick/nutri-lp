@@ -235,6 +235,15 @@
     flex-shrink: 0;
 }
 
+/* Refund Note */
+.refundNote {
+    font-size: 0.8rem;
+    color: rgba(255, 100, 100, 0.8);
+    margin-bottom: 2rem;
+    text-align: center;
+    font-weight: 500;
+}
+
 /* CTA Button */
 .ctaBtn {
     display: block;
