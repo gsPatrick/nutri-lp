@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { CreditCard, QrCode, Shield, Copy, CheckCircle, Loader2 } from 'lucide-react';
 import styles from './page.module.css';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://geral-api-gut-reset.r954jc.easypanel.host';
 
 export default function CheckoutPage() {
     const router = useRouter();
