@@ -38,7 +38,7 @@ export default function Footer() {
                 <h2 className={styles.hugeTitle}>GUT RESET</h2>
 
                 {/* Nutritionist Name */}
-                <p className={styles.signature}>Por Nutri LP</p>
+                <p className={styles.signature}>Por Gut Reset</p>
 
                 {/* Copyright */}
                 <p className={styles.copyright}>

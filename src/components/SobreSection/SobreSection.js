@@ -44,7 +44,7 @@ export default function SobreSection() {
                                 Um intestino inflamado impede seus resultados. O Gut Reset foi desenhado para reorganizar o corpo e fazer ele voltar a responder.
                             </p>
                         </div>
-                        <div className={styles.signature}>Nutri. LP</div>
+                        <div className={styles.signature}>Gut Reset</div>
                     </div>
                 </motion.div>
             </div>

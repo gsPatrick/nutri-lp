@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Nutri LP - Protocolo Gut Reset",
+  title: "Gut Reset - Protocolo Exclusivo",
   description: "Transforme sua saúde com o protocolo Gut Reset.",
 };
 

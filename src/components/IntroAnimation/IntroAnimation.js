@@ -60,7 +60,7 @@ export default function IntroAnimation({ onComplete }) {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.8, delay: 2 }}
                 >
-                    Protocolo Exclusivo Nutri LP
+                    Protocolo Exclusivo Gut Reset
                 </motion.p>
             </div>
 
