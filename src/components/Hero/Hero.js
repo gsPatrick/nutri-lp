@@ -52,7 +52,7 @@ export default function Hero() {
                         <p className={styles.subtitle}>
                             15 dias para desinflamar o corpo, destravar o emagrecimento e devolver sua energia vital.
                         </p>
-                        <a href="#contato" className={styles.ctaButton}>
+                        <a href="/checkout" className={styles.ctaButton}>
                             Garantir minha vaga
                         </a>
                     </motion.div>

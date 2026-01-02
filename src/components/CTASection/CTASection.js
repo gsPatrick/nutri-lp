@@ -126,7 +126,7 @@ export default function CTASection() {
                         {/* Refund Note */}
                         <p className={styles.refundNote}>Produto sem reembolso</p>
 
-                        <a href="#" className={styles.ctaBtn}>
+                        <a href="/checkout" className={styles.ctaBtn}>
                             Garantir Minha Vaga Agora
                         </a>
 

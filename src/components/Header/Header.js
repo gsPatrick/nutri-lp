@@ -30,7 +30,7 @@ export default function Header() {
         >
             <div className={styles.container}>
                 <div className={styles.logo}>
-                    Nutri<span className={styles.highlight}>Vida</span>
+                    Gut<span className={styles.highlight}>Reset</span>
                 </div>
                 <nav className={styles.nav}>
                     <ul className={styles.navList}>
@@ -41,7 +41,7 @@ export default function Header() {
                         ))}
                     </ul>
                 </nav>
-                <a href="#contato" className={styles.ctaButton}>Agendar</a>
+                <a href="/checkout" className={styles.ctaButton}>Garantir Vaga</a>
             </div>
         </motion.header>
     );
