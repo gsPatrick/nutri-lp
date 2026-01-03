@@ -1,107 +1,113 @@
 'use client';
 import { motion } from 'framer-motion';
-import { CheckCircle, Download, FileText, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { CheckCircle, Sparkles, Heart, Zap, Download } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import styles from './page.module.css';
 
 export default function SucessoPage() {
-    // Simulated PDF download URL - replace with real link later
-    const pdfUrl = '/protocolo-gut-reset.pdf';
-
-    const handleDownload = () => {
-        // Simulate download - in production this would be a real PDF
-        alert('PDF simulado! Na versão final, o download será real.');
-        // window.open(pdfUrl, '_blank');
-    };
+    const whatsappGroupLink = 'https://chat.whatsapp.com/KsuQk8YplktL6ovX2OgY6t';
+    const pdfUrl = '/PROTOCOLO - GUT RESET (1) (1).pdf';
 
     return (
         <main className={styles.main}>
             <motion.div
                 className={styles.container}
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.5 }}
             >
-                {/* Success Icon */}
+                {/* Success Badge */}
                 <motion.div
-                    className={styles.iconWrapper}
+                    className={styles.successBadge}
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
+                    transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
                 >
-                    <CheckCircle size={80} strokeWidth={1.5} />
+                    <CheckCircle size={36} strokeWidth={2} />
                 </motion.div>
 
-                {/* Success Message */}
+                {/* Message */}
                 <motion.h1
                     className={styles.title}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
+                    transition={{ delay: 0.3 }}
                 >
-                    Pagamento Confirmado!
+                    Parabéns! 🎉
                 </motion.h1>
 
                 <motion.p
                     className={styles.subtitle}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                >
+                    Seu pagamento foi confirmado e você agora<br />faz parte do <strong>Gut Reset</strong>!
+                </motion.p>
+
+                {/* Benefits mini list */}
+                <motion.div
+                    className={styles.benefits}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5 }}
+                >
+                    <div className={styles.benefitItem}>
+                        <Sparkles size={16} />
+                        <span>Acesso imediato ao grupo VIP</span>
+                    </div>
+                    <div className={styles.benefitItem}>
+                        <Heart size={16} />
+                        <span>Suporte direto com a nutricionista</span>
+                    </div>
+                    <div className={styles.benefitItem}>
+                        <Zap size={16} />
+                        <span>Protocolo completo de 15 dias</span>
+                    </div>
+                </motion.div>
+
+                {/* Action Buttons */}
+                <motion.div
+                    className={styles.actions}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 }}
                 >
-                    Bem-vinda ao Gut Reset! Seu acesso está liberado.
-                </motion.p>
+                    {/* WhatsApp Button */}
+                    <motion.a
+                        href={whatsappGroupLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.whatsappButton}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                    >
+                        <FaWhatsapp size={22} />
+                        <span>Entrar no Grupo VIP</span>
+                    </motion.a>
 
-                {/* Download Card */}
-                <motion.div
-                    className={styles.downloadCard}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8 }}
-                >
-                    <div className={styles.cardIcon}>
-                        <FileText size={40} strokeWidth={1.5} />
-                    </div>
-                    <div className={styles.cardContent}>
-                        <h3>Protocolo Gut Reset</h3>
-                        <p>PDF com seu plano completo de 15 dias</p>
-                    </div>
-                    <button className={styles.downloadButton} onClick={handleDownload}>
+                    {/* PDF Download Button */}
+                    <motion.a
+                        href={pdfUrl}
+                        download="Protocolo-Gut-Reset.pdf"
+                        className={styles.downloadButton}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                    >
                         <Download size={20} />
-                        Baixar PDF
-                    </button>
+                        <span>Baixar Protocolo PDF</span>
+                    </motion.a>
                 </motion.div>
 
-                {/* Next Steps */}
-                <motion.div
-                    className={styles.nextSteps}
+                {/* Footer note */}
+                <motion.p
+                    className={styles.note}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 1 }}
+                    transition={{ delay: 0.8 }}
                 >
-                    <h4>Próximos Passos:</h4>
-                    <ul>
-                        <li><ArrowRight size={16} /> Baixe o PDF do protocolo</li>
-                        <li><ArrowRight size={16} /> Acesse o grupo VIP no WhatsApp</li>
-                        <li><ArrowRight size={16} /> Comece sua transformação!</li>
-                    </ul>
-                </motion.div>
-
-                {/* WhatsApp Group Button */}
-                <motion.a
-                    href="https://wa.me/5511999999999"
-                    target="_blank"
-                    className={styles.whatsappButton}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.2 }}
-                >
-                    Entrar no Grupo VIP
-                </motion.a>
-
-                {/* Back to Home */}
-                <Link href="/" className={styles.backLink}>
-                    Voltar para o início
-                </Link>
+                    Entre no grupo para suporte e baixe o PDF com o protocolo completo
+                </motion.p>
             </motion.div>
         </main>
     );
