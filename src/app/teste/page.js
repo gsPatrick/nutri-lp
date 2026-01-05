@@ -2,26 +2,18 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { CreditCard, QrCode, Shield, Copy, CheckCircle, Loader2 } from 'lucide-react';
-import styles from './page.module.css';
+import { CreditCard, QrCode, Shield, Copy, CheckCircle, Loader2, AlertTriangle } from 'lucide-react';
+import styles from '../checkout/page.module.css';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://geral-api-gut-reset.r954jc.easypanel.host';
+const TEST_PRICE = 5.00; // Preço de teste fixo
 
-export default function CheckoutPage() {
+export default function TestCheckoutPage() {
     const router = useRouter();
     const [paymentMethod, setPaymentMethod] = useState('pix');
     const [isProcessing, setIsProcessing] = useState(false);
     const [pixCopied, setPixCopied] = useState(false);
     const [error, setError] = useState('');
-
-    // Product config from API
-    const [productConfig, setProductConfig] = useState({
-        productPrice: 289,
-        productName: 'Protocolo Gut Reset',
-        maxInstallments: 6,
-        installmentOptions: []
-    });
-    const [configLoaded, setConfigLoaded] = useState(false);
 
     // PIX payment data
     const [pixData, setPixData] = useState(null);
@@ -44,31 +36,6 @@ export default function CheckoutPage() {
         cvv: ''
     });
 
-    const [installments, setInstallments] = useState(1);
-
-    // Load product config from API
-    useEffect(() => {
-        const loadConfig = async () => {
-            try {
-                const response = await fetch(`${API_URL}/api/payments/config`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setProductConfig(data);
-                    setConfigLoaded(true);
-                }
-            } catch (err) {
-                console.error('Error loading config:', err);
-                // Use defaults
-                setConfigLoaded(true);
-            }
-        };
-        loadConfig();
-    }, []);
-
-    const formatPrice = (value) => {
-        return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    };
-
     const handleCustomerChange = (e) => {
         setCustomer({ ...customer, [e.target.name]: e.target.value });
     };
@@ -76,13 +43,11 @@ export default function CheckoutPage() {
     const handleCardChange = (e) => {
         let value = e.target.value;
 
-        // Format card number
         if (e.target.name === 'number') {
             value = value.replace(/\D/g, '').slice(0, 16);
             value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
         }
 
-        // Format expiry
         if (e.target.name === 'expiry') {
             value = value.replace(/\D/g, '').slice(0, 4);
             if (value.length >= 2) {
@@ -105,7 +70,6 @@ export default function CheckoutPage() {
             setError('Preencha todos os dados pessoais');
             return false;
         }
-        // Basic CPF validation (11 digits)
         const cpf = customer.cpfCnpj.replace(/\D/g, '');
         if (cpf.length !== 11 && cpf.length !== 14) {
             setError('CPF/CNPJ inválido');
@@ -115,7 +79,7 @@ export default function CheckoutPage() {
         return true;
     };
 
-    // Generate PIX payment
+    // Generate PIX payment with test price
     const handleGeneratePix = async () => {
         if (!validateCustomer()) return;
 
@@ -126,7 +90,11 @@ export default function CheckoutPage() {
             const response = await fetch(`${API_URL}/api/payments/pix`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ customer })
+                body: JSON.stringify({
+                    customer,
+                    testMode: true,
+                    price: TEST_PRICE
+                })
             });
 
             const data = await response.json();
@@ -145,7 +113,7 @@ export default function CheckoutPage() {
         }
     };
 
-    // Auto-poll PIX payment status every 5 seconds
+    // Auto-poll PIX payment status
     useEffect(() => {
         if (!pixPaymentId) return;
 
@@ -162,16 +130,11 @@ export default function CheckoutPage() {
             }
         };
 
-        // Check immediately
         checkStatus();
-
-        // Then poll every 5 seconds
         const interval = setInterval(checkStatus, 5000);
-
         return () => clearInterval(interval);
     }, [pixPaymentId, router]);
 
-    // Copy PIX code
     const handlePixCopy = () => {
         if (pixData?.copyPaste) {
             navigator.clipboard.writeText(pixData.copyPaste);
@@ -180,30 +143,7 @@ export default function CheckoutPage() {
         }
     };
 
-    // Check PIX payment status
-    const handleCheckPixPayment = async () => {
-        if (!pixPaymentId) return;
-
-        setIsProcessing(true);
-
-        try {
-            const response = await fetch(`${API_URL}/api/payments/${pixPaymentId}/status`);
-            const data = await response.json();
-
-            if (data.confirmed) {
-                router.push('/sucesso');
-            } else {
-                setError('Pagamento ainda não confirmado. Tente novamente em alguns segundos.');
-                setTimeout(() => setError(''), 3000);
-            }
-        } catch (err) {
-            setError('Erro ao verificar pagamento');
-        } finally {
-            setIsProcessing(false);
-        }
-    };
-
-    // Process card payment
+    // Process card payment with test price
     const handleCardPayment = async (e) => {
         e.preventDefault();
         if (!validateCustomer()) return;
@@ -229,7 +169,9 @@ export default function CheckoutPage() {
                         expiryYear: cardData.expiryYear,
                         cvv: cardData.cvv
                     },
-                    installments
+                    installments: 1,
+                    testMode: true,
+                    price: TEST_PRICE
                 })
             });
 
@@ -239,12 +181,7 @@ export default function CheckoutPage() {
                 throw new Error(data.error || 'Erro ao processar pagamento');
             }
 
-            if (data.approved) {
-                router.push('/sucesso');
-            } else {
-                // Redirect to success anyway as payment is in analysis
-                router.push('/sucesso');
-            }
+            router.push('/sucesso');
 
         } catch (err) {
             setError(err.message);
@@ -252,28 +189,6 @@ export default function CheckoutPage() {
             setIsProcessing(false);
         }
     };
-
-    // Generate installment options dynamically
-    const getInstallmentOptions = () => {
-        if (productConfig.installmentOptions && productConfig.installmentOptions.length > 0) {
-            return productConfig.installmentOptions;
-        }
-        // Fallback
-        const price = productConfig.productPrice;
-        const maxInst = Math.min(6, Math.floor(price / 5));
-        const options = [];
-        for (let i = 1; i <= maxInst; i++) {
-            const value = (price / i).toFixed(2);
-            options.push({
-                installments: i,
-                value: parseFloat(value),
-                label: i === 1 ? `1x de R$ ${value} (à vista)` : `${i}x de R$ ${value} sem juros`
-            });
-        }
-        return options;
-    };
-
-    const installmentOptions = getInstallmentOptions();
 
     return (
         <main className={styles.main}>
@@ -283,28 +198,43 @@ export default function CheckoutPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
             >
+                {/* Test Mode Banner */}
+                <div style={{
+                    background: 'rgba(255, 200, 0, 0.2)',
+                    border: '2px solid #FFD700',
+                    borderRadius: '12px',
+                    padding: '1rem',
+                    marginBottom: '1.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem'
+                }}>
+                    <AlertTriangle size={24} color="#FFD700" />
+                    <div>
+                        <strong style={{ color: '#FFD700' }}>MODO TESTE</strong>
+                        <p style={{ fontSize: '0.85rem', opacity: 0.8, margin: 0 }}>
+                            Pagamento de R$ 5,00 apenas para teste
+                        </p>
+                    </div>
+                </div>
+
                 {/* Header */}
                 <div className={styles.header}>
-                    <h1 className={styles.title}>Finalizar Compra</h1>
-                    <p className={styles.subtitle}>{productConfig.productName}</p>
+                    <h1 className={styles.title}>Checkout Teste</h1>
+                    <p className={styles.subtitle}>Gut Reset - Teste de Pagamento</p>
                 </div>
 
                 {/* Order Summary */}
                 <div className={styles.orderSummary}>
-                    <h3>Resumo do Pedido</h3>
+                    <h3>Resumo do Pedido (TESTE)</h3>
                     <div className={styles.orderItem}>
-                        <span>{productConfig.productName}</span>
-                        <span className={styles.price}>R$ {formatPrice(productConfig.productPrice)}</span>
+                        <span>Pagamento de Teste</span>
+                        <span className={styles.price}>R$ 5,00</span>
                     </div>
                     <div className={styles.orderTotal}>
                         <span>Total</span>
-                        <span>R$ {formatPrice(productConfig.productPrice)}</span>
+                        <span>R$ 5,00</span>
                     </div>
-                    {installmentOptions.length > 1 && (
-                        <p className={styles.installments}>
-                            ou {installmentOptions[installmentOptions.length - 1]?.label}
-                        </p>
-                    )}
                 </div>
 
                 {/* Customer Data */}
@@ -392,7 +322,7 @@ export default function CheckoutPage() {
                                     {isProcessing ? (
                                         <><Loader2 size={20} className={styles.spinner} /> Gerando PIX...</>
                                     ) : (
-                                        'Gerar QR Code PIX'
+                                        'Gerar QR Code PIX (R$ 5,00)'
                                     )}
                                 </button>
                             ) : (
@@ -417,17 +347,9 @@ export default function CheckoutPage() {
                                             <><Copy size={18} /> Copiar código PIX</>
                                         )}
                                     </button>
-                                    <button
-                                        className={styles.submitButton}
-                                        onClick={handleCheckPixPayment}
-                                        disabled={isProcessing}
-                                    >
-                                        {isProcessing ? (
-                                            <><Loader2 size={20} className={styles.spinner} /> Verificando...</>
-                                        ) : (
-                                            'Já fiz o pagamento'
-                                        )}
-                                    </button>
+                                    <p style={{ fontSize: '0.85rem', opacity: 0.6, marginTop: '1rem' }}>
+                                        Verificando pagamento automaticamente...
+                                    </p>
                                 </>
                             )}
                         </div>
@@ -481,22 +403,6 @@ export default function CheckoutPage() {
                                     />
                                 </div>
                             </div>
-                            {installmentOptions.length > 1 && (
-                                <div className={styles.formGroup}>
-                                    <label>Parcelas</label>
-                                    <select
-                                        value={installments}
-                                        onChange={(e) => setInstallments(Number(e.target.value))}
-                                        className={styles.select}
-                                    >
-                                        {installmentOptions.map((opt) => (
-                                            <option key={opt.installments} value={opt.installments}>
-                                                {opt.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
                             <button
                                 type="submit"
                                 className={styles.submitButton}
@@ -505,7 +411,7 @@ export default function CheckoutPage() {
                                 {isProcessing ? (
                                     <><Loader2 size={20} className={styles.spinner} /> Processando...</>
                                 ) : (
-                                    `Pagar R$ ${formatPrice(productConfig.productPrice)}`
+                                    'Pagar R$ 5,00 (Teste)'
                                 )}
                             </button>
                         </form>
@@ -518,7 +424,7 @@ export default function CheckoutPage() {
                         <Shield size={20} />
                         <span>Pagamento 100% Seguro</span>
                     </div>
-                    <p className={styles.disclaimer}>Produto sem reembolso</p>
+                    <p className={styles.disclaimer}>Página de teste - Valor real: R$ 5,00</p>
                 </div>
             </motion.div>
         </main>
