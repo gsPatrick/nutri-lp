@@ -32,7 +32,7 @@ function getMaxInstallments(totalPrice) {
  */
 router.post('/pix', async (req, res) => {
     try {
-        const { customer } = req.body;
+        const { customer, testMode, price } = req.body;
 
         if (!customer || !customer.name || !customer.email || !customer.cpfCnpj) {
             return res.status(400).json({
@@ -41,7 +41,11 @@ router.post('/pix', async (req, res) => {
             });
         }
 
-        const productPrice = getProductPrice();
+        // Use test price if in test mode, otherwise use product price
+        let productPrice = getProductPrice();
+        if (testMode && price) {
+            productPrice = Math.max(5, parseFloat(price));
+        }
 
         // Validate minimum value (R$ 5 for PIX)
         if (productPrice < 5) {
@@ -60,7 +64,7 @@ router.post('/pix', async (req, res) => {
         const payment = await asaas.createPixPayment(
             asaasCustomer.id,
             productPrice,
-            process.env.PRODUCT_NAME || 'Protocolo Gut Reset',
+            testMode ? 'TESTE - Gut Reset' : (process.env.PRODUCT_NAME || 'Protocolo Gut Reset'),
             externalReference
         );
 
@@ -101,7 +105,7 @@ router.post('/pix', async (req, res) => {
  */
 router.post('/card', async (req, res) => {
     try {
-        const { customer, card, installments = 1 } = req.body;
+        const { customer, card, installments = 1, testMode, price } = req.body;
 
         if (!customer || !customer.name || !customer.email || !customer.cpfCnpj) {
             return res.status(400).json({
@@ -117,7 +121,11 @@ router.post('/card', async (req, res) => {
             });
         }
 
-        const productPrice = getProductPrice();
+        // Use test price if in test mode, otherwise use product price
+        let productPrice = getProductPrice();
+        if (testMode && price) {
+            productPrice = Math.max(5, parseFloat(price));
+        }
 
         // Validate minimum value (R$ 5 for card)
         if (productPrice < 5) {
@@ -275,6 +283,40 @@ router.post('/checkout', async (req, res) => {
 
     } catch (error) {
         console.error('Checkout Error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * POST /api/payments/test-checkout
+ * Create a test checkout with custom price (for testing only)
+ */
+router.post('/test-checkout', async (req, res) => {
+    try {
+        const { price = 5 } = req.body;
+        const testPrice = Math.max(5, parseFloat(price)); // Minimum R$ 5
+
+        const checkout = await asaas.createCheckout([
+            {
+                name: 'TESTE - Gut Reset',
+                description: 'Pagamento de teste',
+                quantity: 1,
+                value: testPrice
+            }
+        ], {
+            maxInstallmentCount: 1
+        });
+
+        res.json({
+            success: true,
+            testPrice,
+            checkoutUrl: checkout.url,
+            checkoutId: checkout.id,
+            message: `Link de teste com R$ ${testPrice.toFixed(2)}`
+        });
+
+    } catch (error) {
+        console.error('Test Checkout Error:', error);
         res.status(500).json({ error: error.message });
     }
 });
