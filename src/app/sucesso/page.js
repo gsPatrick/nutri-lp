@@ -6,7 +6,7 @@ import styles from './page.module.css';
 
 export default function SucessoPage() {
     const whatsappGroupLink = 'https://chat.whatsapp.com/KsuQk8YplktL6ovX2OgY6t';
-    const pdfUrl = '/PROTOCOLO - GUT RESET (1) (1).pdf';
+    const pdfUrl = '/PROTOCOLO - GUT RESET.pdf';
 
     return (
         <main className={styles.main}>

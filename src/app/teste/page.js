@@ -39,7 +39,41 @@ export default function TestCheckoutPage() {
     });
 
     const handleCustomerChange = (e) => {
-        setCustomer({ ...customer, [e.target.name]: e.target.value });
+        let value = e.target.value;
+
+        // Format CEP (00000-000)
+        if (e.target.name === 'postalCode') {
+            value = value.replace(/\D/g, '').slice(0, 8);
+            if (value.length > 5) {
+                value = value.slice(0, 5) + '-' + value.slice(5);
+            }
+        }
+
+        // Format CPF (000.000.000-00)
+        if (e.target.name === 'cpfCnpj') {
+            value = value.replace(/\D/g, '').slice(0, 11);
+            if (value.length > 9) {
+                value = value.slice(0, 3) + '.' + value.slice(3, 6) + '.' + value.slice(6, 9) + '-' + value.slice(9);
+            } else if (value.length > 6) {
+                value = value.slice(0, 3) + '.' + value.slice(3, 6) + '.' + value.slice(6);
+            } else if (value.length > 3) {
+                value = value.slice(0, 3) + '.' + value.slice(3);
+            }
+        }
+
+        // Format phone
+        if (e.target.name === 'phone') {
+            value = value.replace(/\D/g, '').slice(0, 11);
+            if (value.length > 6) {
+                value = '(' + value.slice(0, 2) + ') ' + value.slice(2, 7) + '-' + value.slice(7);
+            } else if (value.length > 2) {
+                value = '(' + value.slice(0, 2) + ') ' + value.slice(2);
+            } else if (value.length > 0) {
+                value = '(' + value;
+            }
+        }
+
+        setCustomer({ ...customer, [e.target.name]: value });
     };
 
     const handleCardChange = (e) => {
