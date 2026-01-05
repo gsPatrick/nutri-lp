@@ -7,6 +7,26 @@ const { v4: uuidv4 } = require('uuid');
 const payments = new Map();
 
 /**
+ * Parse price from env (handles both comma and dot)
+ */
+function getProductPrice() {
+    const priceStr = process.env.PRODUCT_PRICE || '289.00';
+    // Replace comma with dot for proper parsing
+    const price = parseFloat(priceStr.replace(',', '.'));
+    return isNaN(price) ? 289.00 : price;
+}
+
+/**
+ * Calculate max installments based on price (min R$ 5 per installment)
+ */
+function getMaxInstallments(totalPrice) {
+    const minPerInstallment = 5;
+    const maxAllowed = 6;
+    const maxPossible = Math.floor(totalPrice / minPerInstallment);
+    return Math.min(maxPossible, maxAllowed);
+}
+
+/**
  * POST /api/payments/pix
  * Create a PIX payment
  */
@@ -21,6 +41,15 @@ router.post('/pix', async (req, res) => {
             });
         }
 
+        const productPrice = getProductPrice();
+
+        // Validate minimum value (R$ 5 for PIX)
+        if (productPrice < 5) {
+            return res.status(400).json({
+                error: 'O valor mínimo para cobrança PIX é R$ 5,00'
+            });
+        }
+
         // Create or find customer
         const asaasCustomer = await asaas.createCustomer(customer);
 
@@ -30,7 +59,7 @@ router.post('/pix', async (req, res) => {
         // Create PIX payment
         const payment = await asaas.createPixPayment(
             asaasCustomer.id,
-            parseFloat(process.env.PRODUCT_PRICE) || 289.00,
+            productPrice,
             process.env.PRODUCT_NAME || 'Protocolo Gut Reset',
             externalReference
         );
@@ -88,6 +117,25 @@ router.post('/card', async (req, res) => {
             });
         }
 
+        const productPrice = getProductPrice();
+
+        // Validate minimum value (R$ 5 for card)
+        if (productPrice < 5) {
+            return res.status(400).json({
+                error: 'O valor mínimo para cobrança via Cartão é R$ 5,00'
+            });
+        }
+
+        // Validate installments
+        const maxInstallments = getMaxInstallments(productPrice);
+        const validInstallments = Math.min(Math.max(1, installments), maxInstallments);
+
+        if (installments > maxInstallments) {
+            return res.status(400).json({
+                error: `Máximo de ${maxInstallments}x para esse valor. Cada parcela deve ser no mínimo R$ 5,00.`
+            });
+        }
+
         // Create or find customer
         const asaasCustomer = await asaas.createCustomer(customer);
 
@@ -100,7 +148,7 @@ router.post('/card', async (req, res) => {
         // Create card payment
         const payment = await asaas.createCardPayment(
             asaasCustomer.id,
-            parseFloat(process.env.PRODUCT_PRICE) || 289.00,
+            productPrice,
             card,
             {
                 name: customer.name,
@@ -111,7 +159,7 @@ router.post('/card', async (req, res) => {
                 phone: customer.phone || '',
                 remoteIp
             },
-            installments,
+            validInstallments,
             externalReference
         );
 
@@ -172,20 +220,51 @@ router.get('/:id/status', async (req, res) => {
 });
 
 /**
+ * GET /api/payments/config
+ * Get payment configuration (for frontend)
+ */
+router.get('/config', (req, res) => {
+    const productPrice = getProductPrice();
+    const maxInstallments = getMaxInstallments(productPrice);
+
+    const installmentOptions = [];
+    for (let i = 1; i <= maxInstallments; i++) {
+        const valuePerInstallment = (productPrice / i).toFixed(2);
+        installmentOptions.push({
+            installments: i,
+            value: parseFloat(valuePerInstallment),
+            label: i === 1
+                ? `1x de R$ ${valuePerInstallment} (à vista)`
+                : `${i}x de R$ ${valuePerInstallment} sem juros`
+        });
+    }
+
+    res.json({
+        productPrice,
+        productName: process.env.PRODUCT_NAME || 'Protocolo Gut Reset',
+        maxInstallments,
+        installmentOptions
+    });
+});
+
+/**
  * POST /api/payments/checkout
  * Create ASAAS hosted checkout link
  */
 router.post('/checkout', async (req, res) => {
     try {
+        const productPrice = getProductPrice();
+        const maxInstallments = getMaxInstallments(productPrice);
+
         const checkout = await asaas.createCheckout([
             {
                 name: process.env.PRODUCT_NAME || 'Protocolo Gut Reset',
                 description: process.env.PRODUCT_DESCRIPTION || 'Protocolo exclusivo de 15 dias',
                 quantity: 1,
-                value: parseFloat(process.env.PRODUCT_PRICE) || 289.00
+                value: productPrice
             }
         ], {
-            maxInstallmentCount: 6
+            maxInstallmentCount: maxInstallments
         });
 
         res.json({
