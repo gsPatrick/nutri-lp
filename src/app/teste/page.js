@@ -24,7 +24,9 @@ export default function TestCheckoutPage() {
         name: '',
         email: '',
         cpfCnpj: '',
-        phone: ''
+        phone: '',
+        postalCode: '',
+        addressNumber: ''
     });
 
     // Card data
@@ -279,6 +281,29 @@ export default function TestCheckoutPage() {
                                 placeholder="Telefone"
                                 value={customer.phone}
                                 onChange={handleCustomerChange}
+                            />
+                        </div>
+                    </div>
+                    <div className={styles.formRow}>
+                        <div className={styles.formGroup}>
+                            <input
+                                type="text"
+                                name="postalCode"
+                                placeholder="CEP"
+                                value={customer.postalCode}
+                                onChange={handleCustomerChange}
+                                maxLength={9}
+                                required
+                            />
+                        </div>
+                        <div className={styles.formGroup}>
+                            <input
+                                type="text"
+                                name="addressNumber"
+                                placeholder="Nº Endereço"
+                                value={customer.addressNumber}
+                                onChange={handleCustomerChange}
+                                required
                             />
                         </div>
                     </div>
