@@ -46,6 +46,27 @@
     color: var(--accent);
 }
 
+.warningBox {
+    background: rgba(255, 215, 0, 0.15);
+    border: 2px solid #FFD700;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #FFD700;
+    font-weight: 500;
+}
+
+.warningBox p {
+    margin: 0.25rem 0;
+    font-size: 0.95rem;
+}
+
+.warningBox strong {
+    font-weight: 800;
+    text-decoration: underline;
+}
+
 /* Benefits */
 .benefits {
     background: rgba(255, 255, 255, 0.08);

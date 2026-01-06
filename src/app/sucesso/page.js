@@ -42,8 +42,24 @@ export default function SucessoPage() {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
                 >
-                    Seu pagamento foi confirmado e você agora<br />faz parte do <strong>Gut Reset</strong>!
+                    Seu pagamento foi confirmado!
                 </motion.p>
+
+                {/* Flashing Warning Message */}
+                <motion.div
+                    className={styles.warningBox}
+                    animate={{
+                        boxShadow: ["0 0 0 0 rgba(255, 200, 0, 0)", "0 0 20px 5px rgba(255, 200, 0, 0.5)", "0 0 0 0 rgba(255, 200, 0, 0)"]
+                    }}
+                    transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        repeatType: "loop"
+                    }}
+                >
+                    <p>⚠️ IMPORTANTE ⚠️</p>
+                    <p>Você <strong>PRECISA</strong> clicar nos botões abaixo para entrar no grupo e baixar seu material!</p>
+                </motion.div>
 
                 {/* Benefits mini list */}
                 <motion.div
