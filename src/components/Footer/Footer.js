@@ -35,7 +35,10 @@ export default function Footer() {
 
             <div className={styles.container}>
                 {/* Large GUT RESET Typography */}
-                <h2 className={styles.hugeTitle}>GUT RESET</h2>
+                <div className={styles.titleWrapper}>
+                    <h2 className={styles.hugeTitle}>GUT RESET</h2>
+                    <span className={styles.turmaTag}>TURMA 3</span>
+                </div>
 
                 {/* Nutritionist Name */}
                 <p className={styles.signature}>Por Gut Reset</p>

@@ -7,32 +7,50 @@ import styles from './BeneficiosSection.module.css';
 const features = [
     {
         icon: Scale,
-        title: "Reduzir Inchaço",
-        text: "Elimine a sensação de estufamento e desconforto abdominal.",
+        title: "Reduzir inchaço",
+        text: "Elimine a sensação de estufamento e recupere o bem-estar abdominal.",
         size: "large"
     },
     {
-        icon: Brain,
-        title: "Eixo Intestino-Cérebro",
-        text: "Regule seu humor e diminua a ansiedade tratando a raiz.",
+        icon: Activity,
+        title: "Aliviar desconfortos",
+        text: "Diga adeus às dores e incômodos digestivos diários.",
+        size: "small"
+    },
+    {
+        icon: Star,
+        title: "Absorção de Nutrientes",
+        text: "Garanta que seu corpo receba tudo o que precisa para funcionar.",
         size: "small"
     },
     {
         icon: Zap,
-        title: "Energia Real",
-        text: "Chega de viver cansada. Recupere sua disposição no dia a dia.",
-        size: "small"
-    },
-    {
-        icon: Activity,
-        title: "Nutrição Eficiente",
-        text: "Melhore a absorção de nutrientes vital para sua saúde.",
+        title: "Energia e Disposição",
+        text: "Acorde com vigor e mantenha o ritmo ao longo do dia.",
         size: "medium"
     },
     {
-        icon: ArrowRight,
-        title: "Destravar Peso",
-        text: "Quando a inflamação diminui, o emagrecimento acontece naturalmente.",
+        icon: Heart,
+        title: "Destravar Emagrecimento",
+        text: "Prepare seu corpo para que os resultados na balança apareçam.",
+        size: "small"
+    },
+    {
+        icon: Brain,
+        title: "Eixo Intestino-Cérebro",
+        text: "Regule sua mente tratando a saúde do seu segundo cérebro.",
+        size: "large"
+    },
+    {
+        icon: Activity,
+        title: "Menos Compulsões",
+        text: "Estabilize seu humor e controle seus impulsos alimentares.",
+        size: "small"
+    },
+    {
+        icon: Star,
+        title: "Reeducação Alimentar",
+        text: "O ponto de partida para um novo estilo de vida consciente.",
         size: "small"
     }
 ];

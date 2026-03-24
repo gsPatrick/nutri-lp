@@ -7,32 +7,32 @@ const deliverables = [
     {
         id: "01",
         title: "Protocolo 15 Dias",
-        description: "Um passo a passo completo para reorganizar seu funcionamento intestinal."
+        description: "Passo a passo completo e estratégico para reorganizar seu corpo."
     },
     {
         id: "02",
-        title: "2 Calls de Alinhamento",
-        description: "Mentoria direta para tirar dúvidas e ajustar a rota (Incluso!)."
+        title: "Plano Alimentar",
+        description: "Estratégia alimentar focada em desinflamação e resultados reais."
     },
     {
         id: "03",
-        title: "Plano Anti-inflamatório",
-        description: "Cardápios e estratégias alimentares focadas em desinflamação."
+        title: "Treinos Exclusivos",
+        description: "Plano desenvolvido para potencializar a queima e a energia."
     },
     {
         id: "04",
-        title: "Grupo Exclusivo",
-        description: "Acesso ao grupo VIP para suporte e motivação diária."
+        title: "Suporte Especializado",
+        description: "Acompanhamento e orientações durante todo o processo de 15 dias."
     },
     {
         id: "05",
-        title: "Estratégias Diárias",
-        description: "Digestão, sono e rotina otimizados para resultados rápidos."
+        title: "2 Calls de Grupo",
+        description: "Mentorias ao vivo para alinhamento, dúvidas e acompanhamento."
     },
     {
         id: "06",
-        title: "Pós-Reset",
-        description: "Orientações claras de como seguir após os 15 dias."
+        title: "Bônus E-book",
+        description: "Guia prático: Como interpretar seus exames do jeito certo (24h)."
     }
 ];
 

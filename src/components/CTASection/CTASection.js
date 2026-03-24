@@ -6,14 +6,15 @@ import styles from './CTASection.module.css';
 
 const features = [
     "Protocolo completo de 15 dias",
-    "2 Calls de alinhamento ao vivo",
-    "Grupo VIP exclusivo no WhatsApp",
-    "Plano alimentar personalizado",
-    "Suporte direto comigo"
+    "Plano alimentar estratégico",
+    "Estratégias digestivas diárias",
+    "Plano de treinos exclusivo",
+    "Suporte durante todo o processo",
+    "Bônus: E-book exclusivo (24h)"
 ];
 
-// Countdown Target: 12/01/2026 (Updated per request)
-const targetDate = new Date('2026-01-12T00:00:00');
+// Countdown Target: 05/04/2026 (Registration deadline)
+const targetDate = new Date('2026-04-05T23:59:59');
 
 function useCountdown(targetDate) {
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -62,11 +63,11 @@ export default function CTASection() {
                     {/* Urgency Badge */}
                     <div className={styles.urgencyBadge}>
                         <Clock size={16} />
-                        <span>INSCRIÇÕES ENCERRAM EM BREVE</span>
+                        <span>INSCRIÇÕES ABERTAS - VAGAS LIMITADAS</span>
                     </div>
 
                     {/* Target Date Display */}
-                    <p className={styles.targetDate}>Próxima turma inicia em <strong>12/01</strong></p>
+                    <p className={styles.targetDate}>Próxima turma inicia em <strong>13/04</strong></p>
 
                     {/* Countdown Timer */}
                     <div className={styles.countdownContainer}>
@@ -92,26 +93,26 @@ export default function CTASection() {
                     </div>
 
                     <h2 className={styles.headline}>
-                        Pronta para transformar<br />
-                        <span className={styles.highlight}>sua relação com o seu corpo?</span>
+                        Sua transformação começa<br />
+                        <span className={styles.highlight}>quando você decide agir.</span>
                     </h2>
 
                     <p className={styles.subheadline}>
-                        Garanta sua vaga e dê o primeiro passo para uma vida mais leve.
+                        Garanta sua vaga na Turma 3 e comece a sentir a diferença no corpo inteiro.
                     </p>
 
                     {/* Pricing Card */}
                     <div className={styles.pricingCard}>
                         <div className={styles.pricingHeader}>
                             <p className={styles.oldPrice}>De R$ 1.700,00</p>
-                            <p className={styles.discount}>-83% OFF</p>
+                            <p className={styles.discount}>LOTE ESPECIAL</p>
                         </div>
                         <p className={styles.newPrice}>
                             <span className={styles.currency}>R$</span>
-                            <span className={styles.amount}>289</span>
+                            <span className={styles.amount}>389</span>
                             <span className={styles.cents}>,00</span>
                         </p>
-                        <p className={styles.paymentNote}>(em até 6x de R$ 48,17 sem juros)</p>
+                        <p className={styles.paymentNote}>(em até 6x de R$ 64,83 sem juros)</p>
 
                         {/* Feature List */}
                         <ul className={styles.featureList}>
@@ -124,7 +125,7 @@ export default function CTASection() {
                         </ul>
 
                         {/* Refund Note */}
-                        <p className={styles.refundNote}>Produto sem reembolso</p>
+                        <p className={styles.refundNote}>Começamos juntas no dia 13/04</p>
 
                         <a href="/checkout" className={styles.ctaBtn}>
                             Garantir Minha Vaga Agora

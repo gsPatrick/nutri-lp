@@ -42,7 +42,7 @@ export default function SucessoPage() {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
                 >
-                    Seu pagamento foi confirmado!
+                    Seu acesso ao <strong>Gut Reset (Turma 3)</strong> foi confirmado!
                 </motion.p>
 
                 {/* Flashing Warning Message */}

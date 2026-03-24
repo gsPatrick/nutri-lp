@@ -49,11 +49,12 @@ export default function Hero() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.8, duration: 1 }}
                     >
+                        <div className={styles.turmaBadge}>TURMA 3</div>
                         <p className={styles.subtitle}>
-                            15 dias para desinflamar o corpo, destravar o emagrecimento e devolver sua energia vital.
+                            Desinflame seu corpo, regule seu intestino e comece a ver resultados reais em poucos dias.
                         </p>
                         <a href="/checkout" className={styles.ctaButton}>
-                            Garantir minha vaga
+                            Garantir minha vaga agora
                         </a>
                     </motion.div>
                 </div>

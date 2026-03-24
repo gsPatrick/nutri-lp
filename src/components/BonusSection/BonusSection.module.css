@@ -1,0 +1,180 @@
+.section {
+    padding: 8rem 0;
+    background-color: #fcfcfc;
+    position: relative;
+    overflow: hidden;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.imageBox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ebookMural {
+    width: 300px;
+    height: 420px;
+    background: linear-gradient(135deg, #2e8b6a 0%, #0a0a0a 100%);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    box-shadow: 20px 20px 60px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.ebookMural::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.ebookMural span {
+    margin-top: 2rem;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    font-weight: 600;
+}
+
+.textBox {
+    max-width: 600px;
+}
+
+.label {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--primary-green);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: #1a1a1a;
+    line-height: 1.1;
+    margin-bottom: 2rem;
+}
+
+.description {
+    font-family: var(--font-body);
+    font-size: 1.125rem;
+    color: #4a4a4a;
+    line-height: 1.8;
+    margin-bottom: 3rem;
+    font-weight: 300;
+}
+
+/* Timer Styles */
+.timerWrapper {
+    background: #f0f7f4;
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 3rem;
+    border-left: 4px solid var(--primary-green);
+}
+
+.timerHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary-green);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+}
+
+.timerGrid {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.timerItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.timerValue {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    color: #1a1a1a;
+    line-height: 1;
+}
+
+.timerLabel {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    color: #777;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 0.5rem;
+}
+
+.timerSeparator {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    color: #ddd;
+    line-height: 1;
+}
+
+.ctaButton {
+    display: inline-block;
+    padding: 1.25rem 3rem;
+    background: #1a1a1a;
+    color: white;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.ctaButton:hover {
+    background: var(--primary-green);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 1024px) {
+    .content {
+        grid-template-columns: 1fr 1.2fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .section {
+        padding: 5rem 0;
+    }
+    
+    .ebookMural {
+        width: 240px;
+        height: 340px;
+    }
+}

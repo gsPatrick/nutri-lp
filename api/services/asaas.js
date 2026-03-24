@@ -155,6 +155,13 @@ class AsaasService {
     }
 
     /**
+     * Get customer details
+     */
+    async getCustomer(customerId) {
+        return this.request(`/customers/${customerId}`);
+    }
+
+    /**
      * Create checkout link (redirect to ASAAS hosted page)
      */
     async createCheckout(items, options = {}) {

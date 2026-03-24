@@ -1,45 +1,70 @@
 .main {
     min-height: 100vh;
     min-height: 100dvh;
-    background: linear-gradient(135deg, #1a3c2f 0%, var(--primary-green) 50%, #0f2618 100%);
+    background: radial-gradient(circle at top right, #0d2e24 0%, #000 100%);
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.main::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    right: -10%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(46, 139, 106, 0.15) 0%, transparent 70%);
+    filter: blur(100px);
+    pointer-events: none;
 }
 
 .container {
     width: 100%;
-    max-width: 440px;
+    max-width: 500px;
+    background: rgba(10, 25, 20, 0.85);
+    backdrop-filter: blur(50px);
+    -webkit-backdrop-filter: blur(50px);
+    border: 1px solid rgba(46, 139, 106, 0.3);
+    border-radius: 32px;
+    padding: 3.5rem 2.5rem;
     text-align: center;
     color: white;
+    box-shadow: 0 50px 120px rgba(0, 0, 0, 0.8);
+    position: relative;
+    z-index: 1;
 }
 
 .successBadge {
-    width: 70px;
-    height: 70px;
-    margin: 0 auto 1.25rem;
-    background: linear-gradient(135deg, var(--accent) 0%, #c4935e 100%);
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 2rem;
+    background: var(--accent);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     color: #000;
-    box-shadow: 0 12px 35px rgba(212, 163, 115, 0.4);
+    box-shadow: 0 20px 50px rgba(212, 163, 115, 0.3);
 }
 
 .title {
     font-family: var(--font-heading);
-    font-size: clamp(1.6rem, 5vw, 2.2rem);
-    margin-bottom: 0.5rem;
+    font-size: clamp(2rem, 6vw, 2.8rem);
+    margin-bottom: 0.75rem;
     color: white;
+    letter-spacing: -0.02em;
 }
 
 .subtitle {
-    font-size: 0.95rem;
-    opacity: 0.9;
-    margin-bottom: 1.5rem;
-    line-height: 1.5;
+    font-size: 1.1rem;
+    opacity: 0.8;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .subtitle strong {
@@ -47,141 +72,131 @@
 }
 
 .warningBox {
-    background: rgba(255, 215, 0, 0.15);
-    border: 2px solid #FFD700;
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
+    background: rgba(212, 163, 115, 0.1);
+    border: 1px solid rgba(212, 163, 115, 0.3);
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin-bottom: 2.5rem;
     text-align: center;
-    color: #FFD700;
-    font-weight: 500;
+    color: var(--accent);
 }
 
 .warningBox p {
     margin: 0.25rem 0;
-    font-size: 0.95rem;
+    font-size: 1rem;
+    font-weight: 500;
 }
 
 .warningBox strong {
     font-weight: 800;
-    text-decoration: underline;
 }
 
 /* Benefits */
 .benefits {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 14px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
+    background: rgba(46, 139, 106, 0.05);
+    border: 1px solid rgba(46, 139, 106, 0.15);
+    border-radius: 18px;
+    padding: 1.5rem;
+    margin-bottom: 2.5rem;
     text-align: left;
 }
 
 .benefitItem {
     display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.4rem 0;
-    font-size: 0.85rem;
-    opacity: 0.9;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.6rem 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 .benefitItem svg {
-    color: var(--accent);
+    color: var(--primary-green);
     flex-shrink: 0;
+    margin-top: 2px;
 }
 
 /* Action Buttons */
 .actions {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
 
 .whatsappButton {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.6rem;
+    gap: 0.75rem;
     width: 100%;
-    padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-    border-radius: 12px;
-    color: white;
-    font-weight: 700;
-    font-size: 1rem;
+    padding: 1.25rem;
+    background: #25D366;
+    border-radius: 16px;
+    color: #000;
+    font-weight: 800;
+    font-size: 1.1rem;
     text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 30px rgba(37, 211, 102, 0.35);
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .whatsappButton:hover {
-    box-shadow: 0 14px 40px rgba(37, 211, 102, 0.45);
+    transform: translateY(-3px);
+    background: #20ba59;
+    box-shadow: 0 15px 30px rgba(37, 211, 102, 0.2);
 }
 
 .downloadButton {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.6rem;
+    gap: 0.75rem;
     width: 100%;
-    padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, var(--accent) 0%, #c4935e 100%);
-    border-radius: 12px;
+    padding: 1.25rem;
+    background: var(--accent);
+    border-radius: 16px;
     color: #000;
-    font-weight: 700;
-    font-size: 1rem;
+    font-weight: 800;
+    font-size: 1.1rem;
     text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 30px rgba(212, 163, 115, 0.35);
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .downloadButton:hover {
-    box-shadow: 0 14px 40px rgba(212, 163, 115, 0.45);
+    transform: translateY(-3px);
+    background: #e5b383;
+    box-shadow: 0 15px 30px rgba(212, 163, 115, 0.2);
 }
 
 .note {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     opacity: 0.5;
-    line-height: 1.4;
+    line-height: 1.5;
 }
 
 /* Responsive */
-@media (max-width: 400px) {
+@media (max-width: 550px) {
     .container {
-        padding: 0 0.5rem;
-    }
-
-    .successBadge {
-        width: 60px;
-        height: 60px;
-        margin-bottom: 1rem;
-    }
-
-    .successBadge svg {
-        width: 28px;
-        height: 28px;
+        padding: 2.5rem 1.5rem;
+        border-radius: 24px;
+        max-width: none;
     }
 
     .title {
-        font-size: 1.5rem;
+        font-size: 2.2rem;
     }
 
     .subtitle {
-        font-size: 0.9rem;
-    }
-
-    .benefits {
-        padding: 0.8rem;
-    }
-
-    .benefitItem {
-        font-size: 0.8rem;
-    }
-
-    .whatsappButton {
         font-size: 1rem;
-        padding: 1rem 1.5rem;
+    }
+
+    .whatsappButton, .downloadButton {
+        font-size: 1rem;
+        padding: 1.1rem;
     }
 }

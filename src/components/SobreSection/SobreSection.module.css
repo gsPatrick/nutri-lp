@@ -112,6 +112,28 @@
     font-weight: 600;
 }
 
+.symptomsList {
+    list-style: none;
+    margin: 1.5rem 0;
+    padding: 0;
+}
+
+.symptomsList li {
+    font-size: 1.25rem;
+    color: #1a1a1a;
+    font-family: var(--font-heading);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 400;
+}
+
+.symptomsList li span {
+    color: var(--primary-green);
+    font-weight: bold;
+}
+
 .signature {
     font-family: 'Playfair Display', serif;
     font-size: 1.25rem;

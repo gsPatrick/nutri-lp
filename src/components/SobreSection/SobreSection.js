@@ -37,11 +37,18 @@ export default function SobreSection() {
                         <div className={styles.separator}></div>
                         <div className={styles.text}>
                             <p>
-                                Se você vive <span className={styles.highlight}>estufada, cansada, travada no emagrecimento</span> e com a sensação de que "nada muda", é o seu intestino pedindo ajuda.
+                                Você pode até estar tentando fazer tudo certo mas se o seu intestino não está funcionando bem, o seu corpo não responde.
                             </p>
-                            <br />
+                            
+                            <ul className={styles.symptomsList}>
+                                <li><span>•</span> a barriga incha</li>
+                                <li><span>•</span> a energia oscila</li>
+                                <li><span>•</span> o humor muda</li>
+                                <li><span>•</span> o emagrecimento trava</li>
+                            </ul>
+
                             <p>
-                                Um intestino inflamado impede seus resultados. O Gut Reset foi desenhado para reorganizar o corpo e fazer ele voltar a responder.
+                                O Gut Reset é um protocolo de 15 dias focado em reorganizar o corpo e fazer ele voltar a responder. Porque quando o intestino funciona bem, você sente a diferença no corpo inteiro.
                             </p>
                         </div>
                         <div className={styles.signature}>Gut Reset</div>

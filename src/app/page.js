@@ -3,7 +3,9 @@ import Header from '@/components/Header/Header';
 import Hero from '@/components/Hero/Hero';
 import SobreSection from '@/components/SobreSection/SobreSection';
 import BeneficiosSection from '@/components/BeneficiosSection/BeneficiosSection';
+import NovidadesSection from '@/components/NovidadesSection/NovidadesSection';
 import ServicosSection from '@/components/ServicosSection/ServicosSection';
+import BonusSection from '@/components/BonusSection/BonusSection';
 import DepoimentosSection from '@/components/DepoimentosSection/DepoimentosSection';
 import CTASection from '@/components/CTASection/CTASection';
 import Footer from '@/components/Footer/Footer';
@@ -35,7 +37,9 @@ export default function Home() {
       <Hero />
       <SobreSection />
       <BeneficiosSection />
+      <NovidadesSection />
       <ServicosSection />
+      <BonusSection />
       <DepoimentosSection images={testimonialImages} />
       <CTASection />
       <Footer />

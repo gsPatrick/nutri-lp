@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const asaas = require('../services/asaas');
+const resend = require('../services/resend');
 
 // In-memory storage for confirmed payments (use database in production)
 const confirmedPayments = new Map();
@@ -103,6 +105,9 @@ router.post('/asaas', async (req, res) => {
     }
 });
 
+const asaas = require('../services/asaas');
+const resend = require('../services/resend');
+
 /**
  * Handle payment confirmed event
  */
@@ -118,10 +123,23 @@ async function handlePaymentConfirmed(payment) {
         confirmedAt: new Date()
     });
 
-    // Here you would:
-    // 1. Update database
-    // 2. Send confirmation email
-    // 3. Grant access to the product/course
+    try {
+        // Fetch customer details to get the email
+        const customer = await asaas.getCustomer(payment.customer);
+        
+        if (customer && customer.email) {
+            console.log('📧 Disparando e-mail de confirmação para:', customer.email);
+            await resend.sendPaymentConfirmation(customer.email, {
+                value: payment.value,
+                billingType: payment.billingType,
+                externalReference: payment.externalReference
+            });
+        } else {
+            console.warn('⚠️ Cliente não encontrado ou sem e-mail para o pagamento:', payment.id);
+        }
+    } catch (error) {
+        console.error('❌ Erro ao processar envio de e-mail no webhook:', error);
+    }
 
     console.log('🎉 Acesso liberado para:', payment.externalReference);
 }

@@ -10,10 +10,10 @@ const payments = new Map();
  * Parse price from env (handles both comma and dot)
  */
 function getProductPrice() {
-    const priceStr = process.env.PRODUCT_PRICE || '289.00';
+    const priceStr = process.env.PRODUCT_PRICE || '389.00';
     // Replace comma with dot for proper parsing
     const price = parseFloat(priceStr.replace(',', '.'));
-    return isNaN(price) ? 289.00 : price;
+    return isNaN(price) ? 389.00 : price;
 }
 
 /**

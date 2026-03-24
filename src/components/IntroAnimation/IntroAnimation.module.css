@@ -47,6 +47,16 @@
     -webkit-text-fill-color: transparent;
 }
 
+.turmaTitle {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--accent);
+    text-align: center;
+    letter-spacing: 0.5em;
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
+}
+
 .line {
     height: 1px;
     background: var(--accent);

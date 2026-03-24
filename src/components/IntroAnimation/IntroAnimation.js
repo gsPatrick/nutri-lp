@@ -35,7 +35,6 @@ export default function IntroAnimation({ onComplete }) {
                     Bem-vinda ao
                 </motion.p>
 
-                {/* Stage 2: Big Title Reveal */}
                 <div className={styles.titleWrapper}>
                     <motion.h1
                         className={styles.title}
@@ -45,6 +44,14 @@ export default function IntroAnimation({ onComplete }) {
                     >
                         GUT RESET
                     </motion.h1>
+                    <motion.h2
+                        className={styles.turmaTitle}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 1.8 }}
+                    >
+                        TURMA 3
+                    </motion.h2>
                     <motion.div
                         className={styles.line}
                         initial={{ width: 0 }}

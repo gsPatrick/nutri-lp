@@ -37,6 +37,21 @@
     z-index: 2;
 }
 
+.titleWrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.turmaTag {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    opacity: 0.8;
+}
+
 /* Large GUT RESET Text - Similar to Hero */
 .hugeTitle {
     font-family: var(--font-heading);
