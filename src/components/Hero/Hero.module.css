@@ -168,14 +168,17 @@
 @media (max-width: 768px) {
     .hugeTitle {
         font-size: 20vw;
-        top: 25%;
-        white-space: normal;
+        left: 0;
+        width: 100%;
+        text-align: center;
         -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
     }
 
     .imageWrapper {
-        height: 65vh;
+        height: 60vh; /* Reduced from 65vh to shift subject down and avoid covering text */
         left: 50%;
+        transform: translateX(-50%); /* Crucial for actual centering */
+        bottom: -2%; /* Small offset into the floor */
     }
 
     .floatingContent {

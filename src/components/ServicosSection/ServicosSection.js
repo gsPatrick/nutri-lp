@@ -26,8 +26,8 @@ const deliverables = [
     },
     {
         id: "05",
-        title: "2 Calls de Grupo",
-        description: "Mentorias ao vivo para alinhamento, dúvidas e acompanhamento."
+        title: "2 call de Grupo",
+        description: "Encontros ao vivo para te orientar e tirar dúvidas durante o processo."
     },
     {
         id: "06",

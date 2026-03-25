@@ -21,6 +21,8 @@
 /build
 
 # misc
+# Mac metadata
+._*
 .DS_Store
 *.pem
 
