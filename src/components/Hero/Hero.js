@@ -38,7 +38,7 @@ export default function Hero() {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     transition={{ duration: 1.5, ease: "easeOut" }}
                 >
-                    <img src="/Dra. Júlia Junger 10801350.png" alt="Dra. Júlia Junger" className={styles.heroImage} />
+                    <img src="/dra-julia-hero.png" alt="Dra. Júlia Junger" className={styles.heroImage} />
                 </motion.div>
 
                 {/* Content Layer - Floating Cards/Text */}

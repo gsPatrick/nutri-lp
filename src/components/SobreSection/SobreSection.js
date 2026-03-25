@@ -17,7 +17,7 @@ export default function SobreSection() {
                     <div className={styles.imageWrapper}>
                         {/* Clean image without complex parallax container that might cut it off */}
                         <img
-                            src="/Lexar DataShield Quick Start Guide_Mac-20200715.jpeg"
+                            src="/sobre-michelle.jpeg"
                             alt="Sobre Dra. Michelle"
                             className={styles.image}
                         />
