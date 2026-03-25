@@ -175,14 +175,14 @@
     }
 
     .imageWrapper {
-        height: 60vh;
+        height: 78vh; /* Increased from 60vh to bring subject closer to title */
         width: 100%;
         left: 0;
         bottom: -2%;
         display: flex;
         justify-content: center;
         align-items: flex-end;
-        transform: none; /* Reset any previous transform */
+        transform: none;
     }
 
     .floatingContent {
