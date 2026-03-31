@@ -4,34 +4,37 @@ import { motion } from 'framer-motion';
 import { BookOpen, Clock } from 'lucide-react';
 import styles from './BonusSection.module.css';
 
-function useCountdown(targetHours) {
-    const [timeLeft, setTimeLeft] = useState({ hours: targetHours, minutes: 0, seconds: 0 });
+function useCountdown(targetDateStr) {
+    const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
     useEffect(() => {
-        // For a demonstration, we'll start a 24h countdown from the first render
-        // In a real app, this might be based on a session or a fixed date
-        let totalSeconds = targetHours * 3600;
+        const target = new Date(targetDateStr).getTime();
 
-        const timer = setInterval(() => {
-            if (totalSeconds > 0) {
-                totalSeconds -= 1;
-                const h = Math.floor(totalSeconds / 3600);
-                const m = Math.floor((totalSeconds % 3600) / 60);
-                const s = totalSeconds % 60;
-                setTimeLeft({ hours: h, minutes: m, seconds: s });
+        const updateTimer = () => {
+            const now = new Date().getTime();
+            const difference = target - now;
+
+            if (difference > 0) {
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) + Math.floor(difference / (1000 * 60 * 60 * 24)) * 24; // Show total remaining hours even if > 24
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                setTimeLeft({ hours, minutes, seconds });
             } else {
-                clearInterval(timer);
+                setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
             }
-        }, 1000);
+        };
+
+        updateTimer();
+        const timer = setInterval(updateTimer, 1000);
 
         return () => clearInterval(timer);
-    }, [targetHours]);
+    }, [targetDateStr]);
 
     return timeLeft;
 }
 
 export default function BonusSection() {
-    const countdown = useCountdown(24);
+    const countdown = useCountdown('2026-04-01T23:59:59-03:00');
 
     return (
         <section className={styles.section}>

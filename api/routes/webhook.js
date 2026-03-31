@@ -132,7 +132,8 @@ async function handlePaymentConfirmed(payment) {
             await resend.sendPaymentConfirmation(customer.email, {
                 value: payment.value,
                 billingType: payment.billingType,
-                externalReference: payment.externalReference
+                externalReference: payment.externalReference,
+                confirmedAt: new Date()
             });
         } else {
             console.warn('⚠️ Cliente não encontrado ou sem e-mail para o pagamento:', payment.id);

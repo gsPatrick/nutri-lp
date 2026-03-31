@@ -1,4 +1,6 @@
 const { Resend } = require('resend');
+const fs = require('fs');
+const path = require('path');
 
 // Initialize Resend with API Key from environment
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -15,7 +17,43 @@ async function sendPaymentConfirmation(email, paymentData) {
             return { success: false, error: 'API Key missing' };
         }
 
+        const attachments = [];
+        const pdfDir = path.join(__dirname, '../assets/pdfs');
+
+        // Main PDF
+        try {
+            const mainPdfPath = path.join(pdfDir, 'gut_reset_protocolo.pdf');
+            if (fs.existsSync(mainPdfPath)) {
+                attachments.push({
+                    filename: 'gut_reset_protocolo.pdf',
+                    content: fs.readFileSync(mainPdfPath)
+                });
+            }
+        } catch (e) {
+            console.warn('⚠️ Erro ao ler PDF principal:', e.message);
+        }
+
+        // Bonus PDF (Somente compras do dia 01/04/2026)
+        try {
+            const confirmedDate = paymentData.confirmedAt ? new Date(paymentData.confirmedAt) : new Date();
+            const brTzOptions = { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' };
+            const brDateStr = confirmedDate.toLocaleDateString('pt-BR', brTzOptions);
+            
+            if (brDateStr === '01/04/2026') {
+                const bonusPdfPath = path.join(pdfDir, 'bonus_exames.pdf');
+                if (fs.existsSync(bonusPdfPath)) {
+                    attachments.push({
+                        filename: 'bonus_exames.pdf',
+                        content: fs.readFileSync(bonusPdfPath)
+                    });
+                }
+            }
+        } catch (e) {
+            console.warn('⚠️ Erro ao avaliar PDF bônus:', e.message);
+        }
+
         const { data, error } = await resend.emails.send({
+            attachments: attachments.length > 0 ? attachments : undefined,
             from: 'Gut Reset <contato@gutreset.lpnutri.com.br>', // Replace with your verified domain
             to: [email],
             subject: '🎉 Seu acesso ao Gut Reset está confirmado!',
@@ -34,13 +72,23 @@ async function sendPaymentConfirmation(email, paymentData) {
                         </ul>
                     </div>
 
-                    <p><strong>Acesse agora o seu material:</strong></p>
-                    <p>O conteúdo completo está disponível no link abaixo. Não esqueça de entrar no nosso grupo VIP de alunos para receber todo o suporte.</p>
+                    <p><strong>Acesse o Grupo de Alunas:</strong></p>
+                    <p>Entre no nosso grupo exclusivo para orientações e dúvidas durante o processo de 15 dias.</p>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <a href="https://chat.whatsapp.com/KsuQk8YplktL6ovX2OgY6t?mode=gi_t" 
+                           style="background-color: #25D366; color: white; padding: 15px 25px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block;">
+                            ENTRAR NO GRUPO DO WHATSAPP
+                        </a>
+                    </div>
+                    
+                    <p><strong>Seu Material:</strong></p>
+                    <p>Verifique os <strong>arquivos em anexo</strong> neste e-mail para baixar o seu Protocolo Gut Reset (e os bônus, caso se aplique).</p>
                     
                     <div style="text-align: center; margin: 30px 0;">
                         <a href="${process.env.FRONTEND_URL || 'https://lpnutri.com.br'}/sucesso" 
                            style="background-color: #2E8B6A; color: white; padding: 15px 25px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block;">
-                            ACESSAR MEU PROTOCOLO
+                            ACESSAR MEU PAINEL
                         </a>
                     </div>
 
