@@ -25,7 +25,7 @@ export default function CheckoutPage() {
 
     // Product config from API
     const [productConfig, setProductConfig] = useState({
-        productPrice: 289,
+        productPrice: 389,
         productName: 'Protocolo Gut Reset',
         maxInstallments: 6,
         installmentOptions: []
