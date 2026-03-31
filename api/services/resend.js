@@ -42,9 +42,9 @@ async function sendPaymentConfirmation(email, paymentData) {
             const mainFolder = path.join(pdfBasePath, 'conteudo_principal');
             if (fs.existsSync(mainFolder)) {
                 const files = fs.readdirSync(mainFolder);
-                const pdfFile = files.find(f => f.toLowerCase().endsWith('.pdf'));
+                const pdfFiles = files.filter(f => f.toLowerCase().endsWith('.pdf') && !f.startsWith('._'));
                 
-                if (pdfFile) {
+                for (const pdfFile of pdfFiles) {
                     attachments.push({
                         filename: pdfFile,
                         content: fs.readFileSync(path.join(mainFolder, pdfFile)).toString('base64')
@@ -61,9 +61,9 @@ async function sendPaymentConfirmation(email, paymentData) {
                 const bonusFolder = path.join(pdfBasePath, 'bonus_24h');
                 if (fs.existsSync(bonusFolder)) {
                     const files = fs.readdirSync(bonusFolder);
-                    const pdfFile = files.find(f => f.toLowerCase().endsWith('.pdf'));
+                    const pdfFiles = files.filter(f => f.toLowerCase().endsWith('.pdf') && !f.startsWith('._'));
                     
-                    if (pdfFile) {
+                    for (const pdfFile of pdfFiles) {
                         attachments.push({
                             filename: pdfFile,
                             content: fs.readFileSync(path.join(bonusFolder, pdfFile)).toString('base64')
