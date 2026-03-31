@@ -64,7 +64,7 @@ async function sendPaymentConfirmation(email, paymentData) {
 
         const { data, error } = await resend.emails.send({
             attachments: attachments.length > 0 ? attachments : undefined,
-            from: 'Gut Reset <contato@gutreset.lpnutri.com.br>', // Replace with your verified domain
+            from: 'Gut Reset <suporte@gutreset.store>',
             to: [email],
             subject: '🎉 Seu acesso ao Gut Reset está confirmado!',
             html: `
