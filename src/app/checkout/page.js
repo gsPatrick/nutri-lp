@@ -25,7 +25,7 @@ export default function CheckoutPage() {
 
     // Product config from API
     const [productConfig, setProductConfig] = useState({
-        productPrice: 389,
+        productPrice: 5, // TESTE: Valor mínimo para validar compra
         productName: 'Protocolo Gut Reset',
         maxInstallments: 6,
         installmentOptions: []

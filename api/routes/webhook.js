@@ -228,4 +228,22 @@ router.get('/test', (req, res) => {
     });
 });
 
+/**
+ * GET /api/webhook/test-email
+ * Endpoint para disparar email de teste e validar anexos
+ */
+router.get('/test-email', async (req, res) => {
+    try {
+        await resend.sendPaymentConfirmation('karinerochasm@gmail.com', {
+            value: 5.00,
+            billingType: 'MOCK_TEST',
+            externalReference: 'MOCK-123',
+            confirmedAt: new Date('2026-04-01T12:00:00-03:00') // Força 01/04 para incluir bônus
+        });
+        res.json({ success: true, message: 'Test email sent to karinerochasm@gmail.com (with 01/04 simulated date)' });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
 module.exports = router;
