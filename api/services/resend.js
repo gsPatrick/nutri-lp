@@ -18,38 +18,48 @@ async function sendPaymentConfirmation(email, paymentData) {
         }
 
         const attachments = [];
-        const pdfDir = path.join(__dirname, '../assets/pdfs');
+        const pdfBasePath = path.join(__dirname, '../assets/pdfs');
 
-        // Main PDF
+        // Main PDF (Qualquer PDF dentro de conteudo_principal)
         try {
-            const mainPdfPath = path.join(pdfDir, 'gut_reset_protocolo.pdf');
-            if (fs.existsSync(mainPdfPath)) {
-                attachments.push({
-                    filename: 'gut_reset_protocolo.pdf',
-                    content: fs.readFileSync(mainPdfPath)
-                });
+            const mainFolder = path.join(pdfBasePath, 'conteudo_principal');
+            if (fs.existsSync(mainFolder)) {
+                const files = fs.readdirSync(mainFolder);
+                const pdfFile = files.find(f => f.toLowerCase().endsWith('.pdf'));
+                
+                if (pdfFile) {
+                    attachments.push({
+                        filename: pdfFile,
+                        content: fs.readFileSync(path.join(mainFolder, pdfFile))
+                    });
+                }
             }
         } catch (e) {
-            console.warn('⚠️ Erro ao ler PDF principal:', e.message);
+            console.warn('⚠️ Erro ao procurar PDF principal:', e.message);
         }
 
-        // Bonus PDF (Somente compras do dia 01/04/2026)
+        // Bonus PDF (Qualquer PDF dentro de bonus_24h) - Somente 01/04/2026
         try {
             const confirmedDate = paymentData.confirmedAt ? new Date(paymentData.confirmedAt) : new Date();
             const brTzOptions = { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' };
             const brDateStr = confirmedDate.toLocaleDateString('pt-BR', brTzOptions);
             
             if (brDateStr === '01/04/2026') {
-                const bonusPdfPath = path.join(pdfDir, 'bonus_exames.pdf');
-                if (fs.existsSync(bonusPdfPath)) {
-                    attachments.push({
-                        filename: 'bonus_exames.pdf',
-                        content: fs.readFileSync(bonusPdfPath)
-                    });
+                const bonusFolder = path.join(pdfBasePath, 'bonus_24h');
+                if (fs.existsSync(bonusFolder)) {
+                    const files = fs.readdirSync(bonusFolder);
+                    const pdfFile = files.find(f => f.toLowerCase().endsWith('.pdf'));
+                    
+                    if (pdfFile) {
+                        attachments.push({
+                            filename: pdfFile,
+                            content: fs.readFileSync(path.join(bonusFolder, pdfFile))
+                        });
+                    }
                 }
             }
         } catch (e) {
-            console.warn('⚠️ Erro ao avaliar PDF bônus:', e.message);
+            console.warn('⚠️ Erro ao procurar PDF bônus:', e.message);
         }
 
         const { data, error } = await resend.emails.send({
