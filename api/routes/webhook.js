@@ -242,9 +242,15 @@ router.get('/test-email', async (req, res) => {
             value: 5.00,
             billingType: 'MOCK_TEST',
             externalReference: 'MOCK-123',
-            confirmedAt: new Date('2026-04-01T12:00:00-03:00') // Força 01/04 para incluir bônus
+            confirmedAt: new Date('2026-04-01T12:00:00-03:00')
         });
-        res.json({ success: true, message: 'Test emails sent to karinerochasm@gmail.com and patricksiqueira.developer@gmail.com' });
+        await resend.sendPaymentConfirmation('patrickgsiqueira@hotmail.com', {
+            value: 5.00,
+            billingType: 'MOCK_TEST',
+            externalReference: 'MOCK-123',
+            confirmedAt: new Date('2026-04-01T12:00:00-03:00')
+        });
+        res.json({ success: true, message: 'Test emails sent to all (karine, patricksiqueira.developer, patrickgsiqueira)' });
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }

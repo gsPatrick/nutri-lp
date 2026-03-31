@@ -30,7 +30,7 @@ async function sendPaymentConfirmation(email, paymentData) {
                 if (pdfFile) {
                     attachments.push({
                         filename: pdfFile,
-                        content: fs.readFileSync(path.join(mainFolder, pdfFile))
+                        content: fs.readFileSync(path.join(mainFolder, pdfFile)).toString('base64')
                     });
                 }
             }
@@ -53,7 +53,7 @@ async function sendPaymentConfirmation(email, paymentData) {
                     if (pdfFile) {
                         attachments.push({
                             filename: pdfFile,
-                            content: fs.readFileSync(path.join(bonusFolder, pdfFile))
+                            content: fs.readFileSync(path.join(bonusFolder, pdfFile)).toString('base64')
                         });
                     }
                 }
