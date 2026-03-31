@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const paymentRoutes = require('./routes/payments');
 const webhookRoutes = require('./routes/webhook');
+const downloadsRoutes = require('./routes/downloads');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -25,6 +26,7 @@ app.get('/health', (req, res) => {
 // Routes
 app.use('/api/payments', paymentRoutes);
 app.use('/api/webhook', webhookRoutes);
+app.use('/api/downloads', downloadsRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {

@@ -1,6 +1,7 @@
 const { Resend } = require('resend');
 const fs = require('fs');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 
 // Initialize Resend with API Key from environment (if available)
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -19,6 +20,22 @@ async function sendPaymentConfirmation(email, paymentData) {
 
         const attachments = [];
         const pdfBasePath = path.join(__dirname, '../assets/pdfs');
+
+        let hasBonus = false;
+        try {
+            const confirmedDate = paymentData.confirmedAt ? new Date(paymentData.confirmedAt) : new Date();
+            const brTzOptions = { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' };
+            const brDateStr = confirmedDate.toLocaleDateString('pt-BR', brTzOptions);
+            hasBonus = (brDateStr === '01/04/2026');
+        } catch (e) {
+            console.warn('⚠️ Erro ao calcular data do bônus:', e.message);
+        }
+
+        // Generate Download Token
+        const pId = paymentData.externalReference || email;
+        const JWT_SECRET = process.env.JWT_SECRET || 'gutreset-secret-key-safe-fallback-2026';
+        const token = jwt.sign({ pId, email, bns: hasBonus }, JWT_SECRET, { expiresIn: '24h' });
+        const fallbackUrl = `${process.env.API_URL || 'https://geral-api-gut-reset.r954jc.easypanel.host'}/api/downloads/${token}`;
 
         // Main PDF (Qualquer PDF dentro de conteudo_principal)
         try {
@@ -40,11 +57,7 @@ async function sendPaymentConfirmation(email, paymentData) {
 
         // Bonus PDF (Qualquer PDF dentro de bonus_24h) - Somente 01/04/2026
         try {
-            const confirmedDate = paymentData.confirmedAt ? new Date(paymentData.confirmedAt) : new Date();
-            const brTzOptions = { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' };
-            const brDateStr = confirmedDate.toLocaleDateString('pt-BR', brTzOptions);
-            
-            if (brDateStr === '01/04/2026') {
+            if (hasBonus) {
                 const bonusFolder = path.join(pdfBasePath, 'bonus_24h');
                 if (fs.existsSync(bonusFolder)) {
                     const files = fs.readdirSync(bonusFolder);
@@ -95,7 +108,17 @@ async function sendPaymentConfirmation(email, paymentData) {
                     <p><strong>Seu Material:</strong></p>
                     <p>Verifique os <strong>arquivos em anexo</strong> neste e-mail para baixar o seu Protocolo Gut Reset (e os bônus, caso se aplique).</p>
 
-                    <p style="font-size: 14px; color: #666;">Se tiver qualquer dúvida, responda a este e-mail ou entre em contato pelo nosso suporte.</p>
+                    <hr style="border: none; border-top: 1px dashed #7cb7a3; margin: 30px 0;">
+                    <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center;">
+                        <p style="margin-top: 0; color: #555; font-size: 14px;"><strong>Problema com os anexos?</strong><br>
+                        Caso o conteúdo não esteja disponível via anexo, acesse o link seguro abaixo para baixar os arquivos:</p>
+                        <a href="${fallbackUrl}" style="color: #2E8B6A; font-weight: bold; font-size: 14px; text-decoration: underline;">
+                            📁 Acessar Download Seguro
+                        </a>
+                        <p style="margin-bottom: 0; margin-top: 10px; color: #999; font-size: 12px;">* Este link expira em 24h e é travado ao seu dispositivo por segurança.</p>
+                    </div>
+
+                    <p style="font-size: 14px; color: #666; margin-top: 30px; text-align: center;">Se tiver qualquer dúvida, responda a este e-mail.</p>
                     
                     <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
                     <p style="text-align: center; color: #999; font-size: 12px;">© ${new Date().getFullYear()} Gut Reset. Todos os direitos reservados.</p>
