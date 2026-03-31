@@ -94,13 +94,6 @@ async function sendPaymentConfirmation(email, paymentData) {
                     
                     <p><strong>Seu Material:</strong></p>
                     <p>Verifique os <strong>arquivos em anexo</strong> neste e-mail para baixar o seu Protocolo Gut Reset (e os bônus, caso se aplique).</p>
-                    
-                    <div style="text-align: center; margin: 30px 0;">
-                        <a href="${process.env.FRONTEND_URL || 'https://lpnutri.com.br'}/sucesso" 
-                           style="background-color: #2E8B6A; color: white; padding: 15px 25px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block;">
-                            ACESSAR MEU PAINEL
-                        </a>
-                    </div>
 
                     <p style="font-size: 14px; color: #666;">Se tiver qualquer dúvida, responda a este e-mail ou entre em contato pelo nosso suporte.</p>
                     
