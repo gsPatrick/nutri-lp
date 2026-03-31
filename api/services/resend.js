@@ -2,8 +2,8 @@ const { Resend } = require('resend');
 const fs = require('fs');
 const path = require('path');
 
-// Initialize Resend with API Key from environment
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Resend with API Key from environment (if available)
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 /**
  * Send payment confirmation email
@@ -12,7 +12,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
  */
 async function sendPaymentConfirmation(email, paymentData) {
     try {
-        if (!process.env.RESEND_API_KEY) {
+        if (!resend) {
             console.warn('⚠️ RESEND_API_KEY não configurada. E-mail não enviado.');
             return { success: false, error: 'API Key missing' };
         }
