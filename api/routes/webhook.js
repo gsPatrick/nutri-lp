@@ -105,8 +105,6 @@ router.post('/asaas', async (req, res) => {
     }
 });
 
-const asaas = require('../services/asaas');
-const resend = require('../services/resend');
 
 /**
  * Handle payment confirmed event
