@@ -129,8 +129,7 @@ class AsaasService {
                 addressNumber: holderInfo.addressNumber,
                 phone: holderInfo.phone || '',
                 mobilePhone: holderInfo.phone || ''
-            },
-            remoteIp: holderInfo.remoteIp
+            }
         };
 
         // Handle installments based on user feedback
