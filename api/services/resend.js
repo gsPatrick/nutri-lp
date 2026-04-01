@@ -44,32 +44,11 @@ async function sendPaymentConfirmation(email, paymentData) {
                 const files = fs.readdirSync(mainFolder);
                 const pdfFiles = files.filter(f => f.toLowerCase().endsWith('.pdf') && !f.startsWith('._'));
                 
-                // Sort by name so it's deterministic
-                pdfFiles.sort();
-
                 for (const pdfFile of pdfFiles) {
-                    const filePath = path.join(mainFolder, pdfFile);
-                    const stats = fs.statSync(filePath);
-                    
-                    // Base64 overhead is ~33%. Using 25MB as a safe threshold for the raw file.
-                    // If it's a huge file, we skip it from the email and rely on the download link.
-                    if (stats.size > 20 * 1024 * 1024) {
-                        console.warn(`⚠️ [Resend] Skipping huge file in email attachment: ${pdfFile} (${(stats.size/1024/1024).toFixed(1)}MB)`);
-                        continue;
-                    }
-
                     attachments.push({
                         filename: pdfFile,
-                        content: fs.readFileSync(filePath).toString('base64')
+                        content: fs.readFileSync(path.join(mainFolder, pdfFile)).toString('base64')
                     });
-
-                    // Total attachment limit check (cumulative)
-                    // If we already have a big attachment (~25MB raw), don't add more
-                    const currentTotalSize = attachments.reduce((acc, curr) => acc + (curr.content.length * 0.75), 0);
-                    if (currentTotalSize > 25 * 1024 * 1024) {
-                        console.warn('⚠️ [Resend] Cumulative size limit reached. Skipping further attachments.');
-                        break;
-                    }
                 }
             }
         } catch (e) {
@@ -79,27 +58,16 @@ async function sendPaymentConfirmation(email, paymentData) {
         // Bonus PDF (Qualquer PDF dentro de bonus_24h) - Somente 31/03 e 01/04
         try {
             if (hasBonus) {
-                const currentTotalSize = attachments.reduce((acc, curr) => acc + (curr.content.length * 0.75), 0);
-                // Only add bonus if we still have plenty of room (e.g., less than 20MB total so far)
-                if (currentTotalSize < 20 * 1024 * 1024) {
-                    const bonusFolder = path.join(pdfBasePath, 'bonus_24h');
-                    if (fs.existsSync(bonusFolder)) {
-                        const files = fs.readdirSync(bonusFolder);
-                        const pdfFiles = files.filter(f => f.toLowerCase().endsWith('.pdf') && !f.startsWith('._'));
-                        
-                        for (const pdfFile of pdfFiles) {
-                            const filePath = path.join(bonusFolder, pdfFile);
-                            const stats = fs.statSync(filePath);
-
-                            if (stats.size > 15 * 1024 * 1024) continue;
-
-                            attachments.push({
-                                filename: pdfFile,
-                                content: fs.readFileSync(filePath).toString('base64')
-                            });
-
-                            if ((currentTotalSize + stats.size) > 25 * 1024 * 1024) break;
-                        }
+                const bonusFolder = path.join(pdfBasePath, 'bonus_24h');
+                if (fs.existsSync(bonusFolder)) {
+                    const files = fs.readdirSync(bonusFolder);
+                    const pdfFiles = files.filter(f => f.toLowerCase().endsWith('.pdf') && !f.startsWith('._'));
+                    
+                    for (const pdfFile of pdfFiles) {
+                        attachments.push({
+                            filename: pdfFile,
+                            content: fs.readFileSync(path.join(bonusFolder, pdfFile)).toString('base64')
+                        });
                     }
                 }
             }
