@@ -111,12 +111,6 @@ export default function CheckoutPage() {
     const handleCardChange = (e) => {
         let value = e.target.value;
 
-        // Format card number
-        if (e.target.name === 'number') {
-            value = value.replace(/\D/g, '').slice(0, 16);
-            value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
-        }
-
         // Format expiry (MM/AA)
         if (e.target.name === 'expiry') {
             value = value.replace(/\D/g, '').slice(0, 4);
@@ -127,14 +121,14 @@ export default function CheckoutPage() {
             const [month, year] = value.split('/');
             setCardData(prev => ({
                 ...prev,
+                expiry: value,
                 expiryMonth: month || '',
                 expiryYear: year && year.length === 2 ? `20${year}` : (year && year.length === 4 ? year : '')
             }));
+            return;
         }
 
-        if (e.target.name !== 'expiry') {
-            setCardData({ ...cardData, [e.target.name]: value });
-        }
+        setCardData({ ...cardData, [e.target.name]: value });
     };
 
     const validateCustomer = () => {
@@ -530,6 +524,7 @@ export default function CheckoutPage() {
                                             type="text"
                                             name="expiry"
                                             placeholder="MM/AA"
+                                            value={cardData.expiry || ''}
                                             onChange={handleCardChange}
                                             maxLength={5}
                                             required
