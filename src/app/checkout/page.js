@@ -166,7 +166,7 @@ export default function CheckoutPage() {
                 const data = await response.json();
 
                 if (data.confirmed) {
-                    router.push(`/sucesso?email=${encodeURIComponent(formData.email)}`);
+                    router.push(`/sucesso?email=${encodeURIComponent(customer.email)}`);
                 }
             } catch (err) {
                 console.error('Error checking PIX status:', err);
@@ -202,7 +202,7 @@ export default function CheckoutPage() {
             const data = await response.json();
 
             if (data.confirmed) {
-                router.push(`/sucesso?email=${encodeURIComponent(formData.email)}`);
+                router.push(`/sucesso?email=${encodeURIComponent(customer.email)}`);
             } else {
                 setError('Pagamento ainda não confirmado. Tente novamente em alguns segundos.');
                 setTimeout(() => setError(''), 3000);
@@ -251,10 +251,10 @@ export default function CheckoutPage() {
             }
 
             if (data.approved) {
-                router.push(`/sucesso?email=${encodeURIComponent(formData.email)}`);
+                router.push(`/sucesso?email=${encodeURIComponent(customer.email)}`);
             } else {
                 // Redirect to success anyway as payment is in analysis
-                router.push(`/sucesso?email=${encodeURIComponent(formData.email)}`);
+                router.push(`/sucesso?email=${encodeURIComponent(customer.email)}`);
             }
 
         } catch (err) {
