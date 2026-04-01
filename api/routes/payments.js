@@ -150,7 +150,8 @@ router.post('/card', async (req, res) => {
         const externalReference = `GR-${uuidv4().slice(0, 8).toUpperCase()}`;
 
         // Get client IP
-        const remoteIp = req.headers['x-forwarded-for']?.split(',')[0] || req.ip || '127.0.0.1';
+        // Get client IP
+        const remoteIp = req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress || '189.127.13.12';
 
         // Create card payment
         const payment = await asaas.createCardPayment(
