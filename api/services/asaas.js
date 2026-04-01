@@ -137,10 +137,19 @@ class AsaasService {
         if (installments > 1) {
             paymentData.installmentCount = installments;
             paymentData.totalValue = value; // Total of the purchase
-            // NOTE: installmentValue is not sent, ASAAS calculates it
         } else {
             paymentData.value = value;
         }
+
+        // 🔍 DEBUG LOG (REDACTED)
+        console.log('🚀 Enviando cobrança de cartão para ASAAS:', {
+            ...paymentData,
+            creditCard: {
+                ...paymentData.creditCard,
+                number: paymentData.creditCard.number.substring(0, 6) + '******' + paymentData.creditCard.number.substring(12),
+                ccv: '***'
+            }
+        });
 
         return this.request('/payments', {
             method: 'POST',
