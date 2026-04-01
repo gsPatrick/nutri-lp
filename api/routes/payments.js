@@ -164,6 +164,7 @@ router.post('/card', async (req, res) => {
                 postalCode: customer.postalCode || '00000-000',
                 addressNumber: customer.addressNumber || '0',
                 phone: customer.phone || '',
+                mobilePhone: customer.phone || '', // Using same phone as mobilePhone if not distinguished
                 remoteIp
             },
             validInstallments,

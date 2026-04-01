@@ -116,27 +116,29 @@ class AsaasService {
             externalReference: externalReference,
             creditCard: {
                 holderName: cardData.holderName,
-                number: cardData.number.replace(/\s/g, ''),
-                expiryMonth: cardData.expiryMonth,
-                expiryYear: cardData.expiryYear,
-                ccv: cardData.cvv
+                number: String(cardData.number).replace(/\s/g, ''),
+                expiryMonth: String(cardData.expiryMonth).padStart(2, '0'),
+                expiryYear: String(cardData.expiryYear).length === 2 ? `20${cardData.expiryYear}` : String(cardData.expiryYear),
+                ccv: String(cardData.ccv || cardData.cvv)
             },
             creditCardHolderInfo: {
                 name: holderInfo.name,
                 email: holderInfo.email,
-                cpfCnpj: holderInfo.cpfCnpj,
-                postalCode: holderInfo.postalCode,
+                cpfCnpj: holderInfo.cpfCnpj.replace(/\D/g, ''),
+                postalCode: holderInfo.postalCode.replace(/\D/g, ''),
                 addressNumber: holderInfo.addressNumber,
-                phone: holderInfo.phone
+                phone: holderInfo.phone || holderInfo.mobilePhone || '',
+                mobilePhone: holderInfo.mobilePhone || holderInfo.phone || ''
             },
             remoteIp: holderInfo.remoteIp || '127.0.0.1'
         };
 
-        // Handle installments
+        // Handle installments correctly for ASAAS v3
         if (installments > 1) {
             paymentData.installmentCount = installments;
             paymentData.installmentValue = parseFloat((value / installments).toFixed(2));
-            paymentData.totalValue = value;
+            // For installment payments, 'value' is usually the total value in ASAAS v3
+            paymentData.value = value; 
         } else {
             paymentData.value = value;
         }
