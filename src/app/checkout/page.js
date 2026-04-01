@@ -25,7 +25,7 @@ export default function CheckoutPage() {
 
     // Product config from API
     const [productConfig, setProductConfig] = useState({
-        productPrice: 5, // TESTE: Valor mínimo para validar compra
+        productPrice: 389,
         productName: 'Protocolo Gut Reset',
         maxInstallments: 6,
         installmentOptions: []
@@ -180,7 +180,7 @@ export default function CheckoutPage() {
         const interval = setInterval(checkStatus, 5000);
 
         return () => clearInterval(interval);
-    }, [pixPaymentId, router]);
+    }, [pixPaymentId, router, customer.email]);
 
     // Copy PIX code
     const handlePixCopy = () => {

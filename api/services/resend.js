@@ -1,5 +1,5 @@
 const { Resend } = require('resend');
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const jwt = require('jsonwebtoken');
 
@@ -40,14 +40,15 @@ async function sendPaymentConfirmation(email, paymentData) {
         // Main PDF (Qualquer PDF dentro de conteudo_principal)
         try {
             const mainFolder = path.join(pdfBasePath, 'conteudo_principal');
-            if (fs.existsSync(mainFolder)) {
-                const files = fs.readdirSync(mainFolder);
+            if (fs.stat(mainFolder).then(() => true).catch(() => false)) {
+                const files = await fs.readdir(mainFolder);
                 const pdfFiles = files.filter(f => f.toLowerCase().endsWith('.pdf') && !f.startsWith('._'));
                 
                 for (const pdfFile of pdfFiles) {
+                    const content = await fs.readFile(path.join(mainFolder, pdfFile));
                     attachments.push({
                         filename: pdfFile,
-                        content: fs.readFileSync(path.join(mainFolder, pdfFile)).toString('base64')
+                        content: content.toString('base64')
                     });
                 }
             }
@@ -55,18 +56,19 @@ async function sendPaymentConfirmation(email, paymentData) {
             console.warn('⚠️ Erro ao procurar PDF principal:', e.message);
         }
 
-        // Bonus PDF (Qualquer PDF dentro de bonus_24h) - Somente 01/04/2026
+        // Bonus PDF (Qualquer PDF dentro de bonus_24h) - Somente 31/03 e 01/04
         try {
             if (hasBonus) {
                 const bonusFolder = path.join(pdfBasePath, 'bonus_24h');
-                if (fs.existsSync(bonusFolder)) {
-                    const files = fs.readdirSync(bonusFolder);
+                if (fs.stat(bonusFolder).then(() => true).catch(() => false)) {
+                    const files = await fs.readdir(bonusFolder);
                     const pdfFiles = files.filter(f => f.toLowerCase().endsWith('.pdf') && !f.startsWith('._'));
                     
                     for (const pdfFile of pdfFiles) {
+                        const content = await fs.readFile(path.join(bonusFolder, pdfFile));
                         attachments.push({
                             filename: pdfFile,
-                            content: fs.readFileSync(path.join(bonusFolder, pdfFile)).toString('base64')
+                            content: content.toString('base64')
                         });
                     }
                 }

@@ -106,11 +106,52 @@ router.post('/asaas', async (req, res) => {
 });
 
 
+// Background Task Queue to handle high traffic bursts safely
+const queue = [];
+let isProcessingQueue = false;
+
+/**
+ * Process the next task in the background queue
+ */
+async function processQueue() {
+    if (isProcessingQueue || queue.length === 0) return;
+    
+    isProcessingQueue = true;
+    const task = queue.shift();
+    
+    try {
+        console.log(`[Queue] Processando pagamento: ${task.payment.id} (${queue.length} restantes)`);
+        
+        // Fetch customer details to get the email
+        const customer = await asaas.getCustomer(task.payment.customer);
+        
+        if (customer && customer.email) {
+            console.log('📧 [Queue] Disparando e-mail de confirmação para:', customer.email);
+            await resend.sendPaymentConfirmation(customer.email, {
+                value: task.payment.value,
+                billingType: task.payment.billingType,
+                externalReference: task.payment.externalReference,
+                confirmedAt: task.timestamp
+            });
+        } else {
+            console.warn('⚠️ [Queue] Cliente não encontrado ou sem e-mail para o pagamento:', task.payment.id);
+        }
+    } catch (error) {
+        console.error('❌ [Queue] Erro ao processar task:', error.message);
+    } finally {
+        isProcessingQueue = false;
+        // Process next item after a small safety delay (500ms) to respect API rate limits
+        setTimeout(processQueue, 500);
+    }
+}
+
 /**
  * Handle payment confirmed event
  */
-async function handlePaymentConfirmed(payment) {
-    // Store confirmed payment
+function handlePaymentConfirmed(payment) {
+    const timestamp = new Date();
+    
+    // 1. Store confirmed payment locally for frontend polling (immediate)
     confirmedPayments.set(payment.id, {
         paymentId: payment.id,
         customerId: payment.customer,
@@ -118,28 +159,16 @@ async function handlePaymentConfirmed(payment) {
         value: payment.value,
         billingType: payment.billingType,
         status: 'CONFIRMED',
-        confirmedAt: new Date()
+        confirmedAt: timestamp
     });
 
-    try {
-        // Fetch customer details to get the email
-        const customer = await asaas.getCustomer(payment.customer);
-        
-        if (customer && customer.email) {
-            console.log('📧 Disparando e-mail de confirmação para:', customer.email);
-            await resend.sendPaymentConfirmation(customer.email, {
-                value: payment.value,
-                billingType: payment.billingType,
-                externalReference: payment.externalReference,
-                confirmedAt: new Date()
-            });
-        } else {
-            console.warn('⚠️ Cliente não encontrado ou sem e-mail para o pagamento:', payment.id);
-        }
-    } catch (error) {
-        console.error('❌ Erro ao processar envio de e-mail no webhook:', error);
-    }
-
+    // 2. Add to background queue for email processing
+    queue.push({ payment, timestamp });
+    console.log(`🚀 [Queue] Pagamento ${payment.id} adicionado à fila de entrega.`);
+    
+    // 3. Start processing if idle
+    processQueue();
+    
     console.log('🎉 Acesso liberado para:', payment.externalReference);
 }
 
@@ -226,34 +255,6 @@ router.get('/test', (req, res) => {
     });
 });
 
-/**
- * GET /api/webhook/test-email
- * Endpoint para disparar email de teste e validar anexos
- */
-router.get('/test-email', async (req, res) => {
-    try {
-        await resend.sendPaymentConfirmation('karinerochasm@gmail.com', {
-            value: 5.00,
-            billingType: 'MOCK_TEST',
-            externalReference: 'MOCK-123',
-            confirmedAt: new Date('2026-04-01T12:00:00-03:00') // Força 01/04 para incluir bônus
-        });
-        await resend.sendPaymentConfirmation('patricksiqueira.developer@gmail.com', {
-            value: 5.00,
-            billingType: 'MOCK_TEST',
-            externalReference: 'MOCK-123',
-            confirmedAt: new Date('2026-04-01T12:00:00-03:00')
-        });
-        await resend.sendPaymentConfirmation('patrickgsiqueira@hotmail.com', {
-            value: 5.00,
-            billingType: 'MOCK_TEST',
-            externalReference: 'MOCK-123',
-            confirmedAt: new Date('2026-04-01T12:00:00-03:00')
-        });
-        res.json({ success: true, message: 'Test emails sent to all (karine, patricksiqueira.developer, patrickgsiqueira)' });
-    } catch (e) {
-        res.status(500).json({ success: false, error: e.message });
-    }
-});
+
 
 module.exports = router;
