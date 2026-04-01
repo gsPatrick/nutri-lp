@@ -111,6 +111,12 @@ export default function CheckoutPage() {
     const handleCardChange = (e) => {
         let value = e.target.value;
 
+        // Format card number
+        if (e.target.name === 'number') {
+            value = value.replace(/\D/g, '').slice(0, 16);
+            value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+        }
+
         // Format expiry (MM/AA)
         if (e.target.name === 'expiry') {
             value = value.replace(/\D/g, '').slice(0, 4);
