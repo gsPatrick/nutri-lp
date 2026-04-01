@@ -93,10 +93,16 @@ export default function CheckoutPage() {
             }
         }
 
-        // Mask for Phone
+        // Mask for Phone (Handled 10 and 11 digits)
         if (name === 'phone') {
-            value = value.replace(/\D/g, '');
-            value = value.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+            value = value.replace(/\D/g, '').slice(0, 11);
+            if (value.length > 10) {
+                value = value.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+            } else if (value.length > 5) {
+                value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, "($1) $2-$3");
+            } else if (value.length > 2) {
+                value = value.replace(/(\d{2})(\d{0,5})/, "($1) $2");
+            }
         }
 
         // Mask for PostalCode
@@ -264,13 +270,20 @@ export default function CheckoutPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    customer,
+                    customer: {
+                        ...customer,
+                        // Clean data before sending
+                        phone: customer.phone.replace(/\D/g, ''),
+                        cpfCnpj: customer.cpfCnpj.replace(/\D/g, ''),
+                        postalCode: customer.postalCode.replace(/\D/g, ''),
+                        addressNumber: customer.addressNumber.replace(/[^\d\w\s]/g, '') // Keep it clean
+                    },
                     card: {
                         number: cardData.number.replace(/\s/g, ''),
-                        holderName: cardData.holderName,
+                        holderName: cardData.holderName.toUpperCase(),
                         expiryMonth: cardData.expiryMonth,
                         expiryYear: cardData.expiryYear,
-                        cvv: cardData.cvv
+                        ccv: cardData.cvv
                     },
                     installments
                 })
@@ -412,7 +425,8 @@ export default function CheckoutPage() {
                                 <input
                                     type="text"
                                     name="addressNumber"
-                                    placeholder="Nº Endereço"
+                                    placeholder="Nº (Ex: 123)"
+                                    title="Apenas o número da residência"
                                     value={customer.addressNumber}
                                     onChange={handleCustomerChange}
                                     required
