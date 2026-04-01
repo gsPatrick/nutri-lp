@@ -113,10 +113,11 @@ router.post('/card', async (req, res) => {
             });
         }
 
-        if (!card || !card.number || !card.holderName || !card.expiryMonth || !card.expiryYear || !card.cvv) {
+        const ccv = card.ccv || card.cvv;
+        if (!card || !card.number || !card.holderName || !card.expiryMonth || !card.expiryYear || !ccv) {
             return res.status(400).json({
                 error: 'Dados do cartão incompletos',
-                required: ['number', 'holderName', 'expiryMonth', 'expiryYear', 'cvv']
+                required: ['number', 'holderName', 'expiryMonth', 'expiryYear', 'ccv']
             });
         }
 
