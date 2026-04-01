@@ -1,5 +1,5 @@
 const { Resend } = require('resend');
-const fs = require('fs').promises;
+const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 
@@ -40,16 +40,36 @@ async function sendPaymentConfirmation(email, paymentData) {
         // Main PDF (Qualquer PDF dentro de conteudo_principal)
         try {
             const mainFolder = path.join(pdfBasePath, 'conteudo_principal');
-            if (fs.stat(mainFolder).then(() => true).catch(() => false)) {
-                const files = await fs.readdir(mainFolder);
+            if (fs.existsSync(mainFolder)) {
+                const files = fs.readdirSync(mainFolder);
                 const pdfFiles = files.filter(f => f.toLowerCase().endsWith('.pdf') && !f.startsWith('._'));
                 
+                // Sort by name so it's deterministic
+                pdfFiles.sort();
+
                 for (const pdfFile of pdfFiles) {
-                    const content = await fs.readFile(path.join(mainFolder, pdfFile));
+                    const filePath = path.join(mainFolder, pdfFile);
+                    const stats = fs.statSync(filePath);
+                    
+                    // Base64 overhead is ~33%. Using 25MB as a safe threshold for the raw file.
+                    // If it's a huge file, we skip it from the email and rely on the download link.
+                    if (stats.size > 20 * 1024 * 1024) {
+                        console.warn(`⚠️ [Resend] Skipping huge file in email attachment: ${pdfFile} (${(stats.size/1024/1024).toFixed(1)}MB)`);
+                        continue;
+                    }
+
                     attachments.push({
                         filename: pdfFile,
-                        content: content.toString('base64')
+                        content: fs.readFileSync(filePath).toString('base64')
                     });
+
+                    // Total attachment limit check (cumulative)
+                    // If we already have a big attachment (~25MB raw), don't add more
+                    const currentTotalSize = attachments.reduce((acc, curr) => acc + (curr.content.length * 0.75), 0);
+                    if (currentTotalSize > 25 * 1024 * 1024) {
+                        console.warn('⚠️ [Resend] Cumulative size limit reached. Skipping further attachments.');
+                        break;
+                    }
                 }
             }
         } catch (e) {
@@ -59,17 +79,27 @@ async function sendPaymentConfirmation(email, paymentData) {
         // Bonus PDF (Qualquer PDF dentro de bonus_24h) - Somente 31/03 e 01/04
         try {
             if (hasBonus) {
-                const bonusFolder = path.join(pdfBasePath, 'bonus_24h');
-                if (fs.stat(bonusFolder).then(() => true).catch(() => false)) {
-                    const files = await fs.readdir(bonusFolder);
-                    const pdfFiles = files.filter(f => f.toLowerCase().endsWith('.pdf') && !f.startsWith('._'));
-                    
-                    for (const pdfFile of pdfFiles) {
-                        const content = await fs.readFile(path.join(bonusFolder, pdfFile));
-                        attachments.push({
-                            filename: pdfFile,
-                            content: content.toString('base64')
-                        });
+                const currentTotalSize = attachments.reduce((acc, curr) => acc + (curr.content.length * 0.75), 0);
+                // Only add bonus if we still have plenty of room (e.g., less than 20MB total so far)
+                if (currentTotalSize < 20 * 1024 * 1024) {
+                    const bonusFolder = path.join(pdfBasePath, 'bonus_24h');
+                    if (fs.existsSync(bonusFolder)) {
+                        const files = fs.readdirSync(bonusFolder);
+                        const pdfFiles = files.filter(f => f.toLowerCase().endsWith('.pdf') && !f.startsWith('._'));
+                        
+                        for (const pdfFile of pdfFiles) {
+                            const filePath = path.join(bonusFolder, pdfFile);
+                            const stats = fs.statSync(filePath);
+
+                            if (stats.size > 15 * 1024 * 1024) continue;
+
+                            attachments.push({
+                                filename: pdfFile,
+                                content: fs.readFileSync(filePath).toString('base64')
+                            });
+
+                            if ((currentTotalSize + stats.size) > 25 * 1024 * 1024) break;
+                        }
                     }
                 }
             }
@@ -77,69 +107,88 @@ async function sendPaymentConfirmation(email, paymentData) {
             console.warn('⚠️ Erro ao procurar PDF bônus:', e.message);
         }
 
-        const { data, error } = await resend.emails.send({
+        let emailResult = await resend.emails.send({
             attachments: attachments.length > 0 ? attachments : undefined,
             from: 'Gut Reset <suporte@gutreset.store>',
             to: [email],
             subject: '🎉 Seu acesso ao Gut Reset está confirmado!',
-            html: `
-                <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #7cb7a3; border-radius: 10px;">
-                    <h1 style="color: #2E8B6A;">Bem-vinda ao Gut Reset!</h1>
-                    <p>Olá!</p>
-                    <p>Parabéns por dar esse passo importante para a sua saúde. O seu pagamento do <strong>Protocolo Gut Reset (Turma 3)</strong> foi confirmado com sucesso.</p>
-                    
-                    <div style="background-color: #f4faf8; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                        <h2 style="font-size: 18px; margin-top: 0;">Detalhes da Compra:</h2>
-                        <ul style="list-style: none; padding: 0;">
-                            <li><strong>Produto:</strong> Protocolo Gut Reset - Turma 3</li>
-                            <li><strong>Valor:</strong> R$ ${paymentData.value.toFixed(2)}</li>
-                            <li><strong>Forma de Pagamento:</strong> ${paymentData.billingType}</li>
-                        </ul>
-                    </div>
-
-                    <p><strong>Acesse o Grupo de Alunas:</strong></p>
-                    <p>Entre no nosso grupo exclusivo para orientações e dúvidas durante o processo de 15 dias.</p>
-                    
-                    <div style="text-align: center; margin: 30px 0;">
-                        <a href="https://chat.whatsapp.com/KsuQk8YplktL6ovX2OgY6t?mode=gi_t" 
-                           style="background-color: #25D366; color: white; padding: 15px 25px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block;">
-                            ENTRAR NO GRUPO DO WHATSAPP
-                        </a>
-                    </div>
-                    
-                    <p><strong>Seu Material:</strong></p>
-                    <p>Verifique os <strong>arquivos em anexo</strong> neste e-mail para baixar o seu Protocolo Gut Reset (e os bônus, caso se aplique).</p>
-
-                    <hr style="border: none; border-top: 1px dashed #7cb7a3; margin: 30px 0;">
-                    <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center;">
-                        <p style="margin-top: 0; color: #555; font-size: 14px;"><strong>Problema com os anexos?</strong><br>
-                        Caso o conteúdo não esteja disponível via anexo, acesse o link seguro abaixo para baixar os arquivos:</p>
-                        <a href="${fallbackUrl}" style="color: #2E8B6A; font-weight: bold; font-size: 14px; text-decoration: underline;">
-                            📁 Acessar Download Seguro
-                        </a>
-                        <p style="margin-bottom: 0; margin-top: 10px; color: #999; font-size: 12px;">* Este link expira em 24h e é travado ao seu dispositivo por segurança.</p>
-                    </div>
-
-                    <p style="font-size: 14px; color: #666; margin-top: 30px; text-align: center;">Se tiver qualquer dúvida, responda a este e-mail.</p>
-                    
-                    <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-                    <p style="text-align: center; color: #999; font-size: 12px;">© ${new Date().getFullYear()} Gut Reset. Todos os direitos reservados.</p>
-                </div>
-            `,
+            html: EmailTemplate(paymentData, fallbackUrl),
         });
 
-        if (error) {
-            console.error('❌ Erro ao enviar e-mail via Resend:', error);
-            return { success: false, error };
+        // 🚨 Fallback if it still fails due to size (Resend error 400 with "size limit")
+        if (emailResult.error && (emailResult.error.message?.includes('size limit') || emailResult.statusCode === 400)) {
+            console.warn('⚠️ Tentando reenviar e-mail SEM anexos devido ao limite de tamanho...');
+            emailResult = await resend.emails.send({
+                from: 'Gut Reset <suporte@gutreset.store>',
+                to: [email],
+                subject: '🎉 Seu acesso ao Gut Reset está confirmado!',
+                html: EmailTemplate(paymentData, fallbackUrl, true),
+            });
         }
 
-        console.log('📧 E-mail de confirmação enviado para:', email, data.id);
-        return { success: true, id: data.id };
+        if (emailResult.error) {
+            console.error('❌ Erro ao enviar e-mail via Resend:', emailResult.error);
+            return { success: false, error: emailResult.error };
+        }
+
+        console.log('📧 E-mail de confirmação enviado para:', email, emailResult.data?.id);
+        return { success: true, id: emailResult.data?.id };
 
     } catch (err) {
         console.error('❌ Erro inesperado no serviço de e-mail:', err);
         return { success: false, error: err.message };
     }
+}
+
+/**
+ * HTML Template for the confirmation email
+ */
+function EmailTemplate(paymentData, fallbackUrl, sizeWarning = false) {
+    return `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #7cb7a3; border-radius: 10px;">
+            <h1 style="color: #2E8B6A;">Bem-vinda ao Gut Reset!</h1>
+            <p>Olá!</p>
+            <p>Parabéns por dar esse passo importante para a sua saúde. O seu pagamento do <strong>Protocolo Gut Reset (Turma 3)</strong> foi confirmado com sucesso.</p>
+            
+            <div style="background-color: #f4faf8; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <h2 style="font-size: 18px; margin-top: 0;">Detalhes da Compra:</h2>
+                <ul style="list-style: none; padding: 0;">
+                    <li><strong>Produto:</strong> Protocolo Gut Reset - Turma 3</li>
+                    <li><strong>Valor:</strong> R$ ${paymentData.value.toFixed(2)}</li>
+                    <li><strong>Forma de Pagamento:</strong> ${paymentData.billingType}</li>
+                </ul>
+            </div>
+
+            <p><strong>Acesse o Grupo de Alunas:</strong></p>
+            <p>Entre no nosso grupo exclusivo para orientações e dúvidas durante o processo de 15 dias.</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="https://chat.whatsapp.com/KsuQk8YplktL6ovX2OgY6t?mode=gi_t" 
+                    style="background-color: #25D366; color: white; padding: 15px 25px; text-decoration: none; border-radius: 50px; font-weight: bold; display: inline-block;">
+                    ENTRAR NO GRUPO DO WHATSAPP
+                </a>
+            </div>
+            
+            <p><strong>Seu Material:</strong></p>
+            ${sizeWarning 
+                ? `<p style="color: #d9534f; font-weight: bold;">⚠️ Devido ao grande tamanho dos arquivos, enviamos seu material pelo link de download seguro abaixo.</p>`
+                : `<p>Verifique os <strong>arquivos em anexo</strong> neste e-mail ou utilize o link de download abaixo.</p>`
+            }
+
+            <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                <p style="margin-top: 0; color: #555; font-size: 14px;"><strong>Acesse seu material aqui:</strong></p>
+                <a href="${fallbackUrl}" style="background-color: #2E8B6A; color: white; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                    📁 BAIXAR PROTOCOLO COMPLETO
+                </a>
+                <p style="margin-bottom: 0; margin-top: 10px; color: #999; font-size: 12px;">* Este link expira em 24h por segurança.</p>
+            </div>
+
+            <p style="font-size: 14px; color: #666; margin-top: 30px; text-align: center;">Se tiver qualquer dúvida, responda a este e-mail.</p>
+            
+            <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+            <p style="text-align: center; color: #999; font-size: 12px;">© ${new Date().getFullYear()} Gut Reset. Todos os direitos reservados.</p>
+        </div>
+    `;
 }
 
 module.exports = {

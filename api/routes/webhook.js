@@ -106,58 +106,11 @@ router.post('/asaas', async (req, res) => {
 });
 
 
-// Background Task Queue to handle high traffic bursts safely
-const queue = [];
-let isProcessingQueue = false;
-
-/**
- * Process the next task in the background queue
- */
-async function processQueue() {
-    if (isProcessingQueue || queue.length === 0) return;
-    
-    isProcessingQueue = true;
-    const task = queue.shift();
-    
-    try {
-        console.log(`[Queue] Processando pagamento: ${task.payment.id} (${queue.length} restantes)`);
-        
-        // Fetch customer details to get the email
-        const customer = await asaas.getCustomer(task.payment.customer);
-        
-        if (customer && customer.email) {
-            console.log('📧 [Queue] Disparando e-mail de confirmação para:', customer.email);
-            await resend.sendPaymentConfirmation(customer.email, {
-                value: task.payment.value,
-                billingType: task.payment.billingType,
-                externalReference: task.payment.externalReference,
-                confirmedAt: task.timestamp
-            });
-        } else {
-            console.warn('⚠️ [Queue] Cliente não encontrado ou sem e-mail para o pagamento:', task.payment.id);
-        }
-    } catch (error) {
-        console.error('❌ [Queue] Erro ao processar task:', error.message);
-    } finally {
-        isProcessingQueue = false;
-        // Process next item after a small safety delay (500ms) to respect API rate limits
-        setTimeout(processQueue, 500);
-    }
-}
-
 /**
  * Handle payment confirmed event
  */
-function handlePaymentConfirmed(payment) {
-    const timestamp = new Date();
-    const existing = confirmedPayments.get(payment.id);
-
-    if (existing && existing.processed) {
-        console.log(`ℹ️ [Queue] Pagamento ${payment.id} já está sendo processado.`);
-        return;
-    }
-    
-    // 1. Store confirmed payment locally for frontend polling (immediate)
+async function handlePaymentConfirmed(payment) {
+    // Store confirmed payment
     confirmedPayments.set(payment.id, {
         paymentId: payment.id,
         customerId: payment.customer,
@@ -165,17 +118,10 @@ function handlePaymentConfirmed(payment) {
         value: payment.value,
         billingType: payment.billingType,
         status: 'CONFIRMED',
-        confirmedAt: timestamp,
-        processed: true
+        confirmedAt: new Date()
     });
 
-    // 2. Add to background queue for email processing
-    queue.push({ payment, timestamp });
-    console.log(`🚀 [Queue] Pagamento ${payment.id} adicionado à fila de entrega.`);
-    
-    // 3. Start processing if idle
-    processQueue();
-    
+    await triggerDelivery(payment);
     console.log('🎉 Acesso liberado para:', payment.externalReference);
 }
 
@@ -183,21 +129,16 @@ function handlePaymentConfirmed(payment) {
  * Handle payment received event (money available)
  */
 async function handlePaymentReceived(payment) {
-    const timestamp = new Date();
     const existing = confirmedPayments.get(payment.id);
 
     if (existing) {
         existing.status = 'RECEIVED';
-        existing.receivedAt = timestamp;
+        existing.receivedAt = new Date();
         existing.creditDate = payment.creditDate;
         
-        // If it was already confirmed, it's already in the queue or processed
-        // But if for some reason it wasn't confirmed yet (some payment types), we handle it here
-        if (existing.status !== 'CONFIRMED' && !existing.processed) {
-            existing.processed = true;
-            queue.push({ payment, timestamp });
-            console.log(`🚀 [Queue] Pagamento ${payment.id} (RECEIVED) adicionado à fila de entrega.`);
-            processQueue();
+        // Disparo se não tiver sido processado ainda
+        if (!existing.processed) {
+            await triggerDelivery(payment);
         }
     } else {
         // First notification for this payment
@@ -208,18 +149,42 @@ async function handlePaymentReceived(payment) {
             value: payment.value,
             billingType: payment.billingType,
             status: 'RECEIVED',
-            receivedAt: timestamp,
-            creditDate: payment.creditDate,
-            processed: true
+            receivedAt: new Date(),
+            creditDate: payment.creditDate
         });
-
-        // Trigger delivery
-        queue.push({ payment, timestamp });
-        console.log(`🚀 [Queue] Pagamento ${payment.id} (RECEIVED) adicionado à fila de entrega.`);
-        processQueue();
+        await triggerDelivery(payment);
     }
 
     console.log('💰 Dinheiro disponível em:', payment.creditDate);
+}
+
+/**
+ * Função de disparo centralizada (sem fila)
+ */
+async function triggerDelivery(payment) {
+    const existing = confirmedPayments.get(payment.id);
+    if (existing && existing.processed) return;
+
+    if (existing) existing.processed = true;
+
+    try {
+        // Fetch customer details to get the email
+        const customer = await asaas.getCustomer(payment.customer);
+        
+        if (customer && customer.email) {
+            console.log('📧 Disparando e-mail de confirmação para:', customer.email);
+            await resend.sendPaymentConfirmation(customer.email, {
+                value: payment.value,
+                billingType: payment.billingType,
+                externalReference: payment.externalReference,
+                confirmedAt: new Date()
+            });
+        } else {
+            console.warn('⚠️ Cliente não encontrado ou sem e-mail para o pagamento:', payment.id);
+        }
+    } catch (error) {
+        console.error('❌ Erro ao processar envio de e-mail no webhook:', error);
+    }
 }
 
 /**
@@ -278,6 +243,34 @@ router.get('/test', (req, res) => {
     });
 });
 
-
+/**
+ * GET /api/webhook/test-email
+ * Endpoint para disparar email de teste e validar anexos
+ */
+router.get('/test-email', async (req, res) => {
+    try {
+        await resend.sendPaymentConfirmation('karinerochasm@gmail.com', {
+            value: 5.00,
+            billingType: 'MOCK_TEST',
+            externalReference: 'MOCK-123',
+            confirmedAt: new Date('2026-04-01T12:00:00-03:00') // Força 01/04 para incluir bônus
+        });
+        await resend.sendPaymentConfirmation('patricksiqueira.developer@gmail.com', {
+            value: 5.00,
+            billingType: 'MOCK_TEST',
+            externalReference: 'MOCK-123',
+            confirmedAt: new Date('2026-04-01T12:00:00-03:00')
+        });
+        await resend.sendPaymentConfirmation('patrickgsiqueira@hotmail.com', {
+            value: 5.00,
+            billingType: 'MOCK_TEST',
+            externalReference: 'MOCK-123',
+            confirmedAt: new Date('2026-04-01T12:00:00-03:00')
+        });
+        res.json({ success: true, message: 'Test emails sent to all (karine, patricksiqueira.developer, patrickgsiqueira)' });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
 
 module.exports = router;
