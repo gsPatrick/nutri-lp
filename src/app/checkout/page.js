@@ -81,7 +81,31 @@ export default function CheckoutPage() {
     };
 
     const handleCustomerChange = (e) => {
-        setCustomer({ ...customer, [e.target.name]: e.target.value });
+        let { name, value } = e.target;
+
+        // Mask for CPF/CNPJ
+        if (name === 'cpfCnpj') {
+            value = value.replace(/\D/g, '');
+            if (value.length <= 11) {
+                value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+            } else {
+                value = value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+            }
+        }
+
+        // Mask for Phone
+        if (name === 'phone') {
+            value = value.replace(/\D/g, '');
+            value = value.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+        }
+
+        // Mask for PostalCode
+        if (name === 'postalCode') {
+            value = value.replace(/\D/g, '').slice(0, 8);
+            value = value.replace(/(\d{5})(\d{3})/, "$1-$2");
+        }
+
+        setCustomer({ ...customer, [name]: value });
     };
 
     const handleCardChange = (e) => {
@@ -93,33 +117,41 @@ export default function CheckoutPage() {
             value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
         }
 
-        // Format expiry
+        // Format expiry (MM/AA)
         if (e.target.name === 'expiry') {
             value = value.replace(/\D/g, '').slice(0, 4);
             if (value.length >= 2) {
-                const month = value.slice(0, 2);
-                const year = value.slice(2);
-                setCardData({
-                    ...cardData,
-                    expiryMonth: month,
-                    expiryYear: year ? `20${year}` : ''
-                });
-                return;
+                value = value.slice(0, 2) + (value.length > 2 ? '/' + value.slice(2) : '');
             }
+            
+            const [month, year] = value.split('/');
+            setCardData(prev => ({
+                ...prev,
+                expiryMonth: month || '',
+                expiryYear: year && year.length === 2 ? `20${year}` : (year && year.length === 4 ? year : '')
+            }));
         }
 
-        setCardData({ ...cardData, [e.target.name]: value });
+        if (e.target.name !== 'expiry') {
+            setCardData({ ...cardData, [e.target.name]: value });
+        }
     };
 
     const validateCustomer = () => {
-        if (!customer.name || !customer.email || !customer.cpfCnpj) {
-            setError('Preencha todos os dados pessoais');
+        if (!customer.name || !customer.email || !customer.cpfCnpj || !customer.postalCode || !customer.addressNumber) {
+            setError('Preencha todos os dados (incluindo endereço)');
             return false;
         }
         // Basic CPF validation (11 digits)
         const cpf = customer.cpfCnpj.replace(/\D/g, '');
         if (cpf.length !== 11 && cpf.length !== 14) {
             setError('CPF/CNPJ inválido');
+            return false;
+        }
+        // Postal code validation
+        const cep = customer.postalCode.replace(/\D/g, '');
+        if (cep.length !== 8) {
+            setError('CEP inválido');
             return false;
         }
         setError('');
