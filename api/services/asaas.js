@@ -119,26 +119,25 @@ class AsaasService {
                 number: String(cardData.number).replace(/\s/g, ''),
                 expiryMonth: String(cardData.expiryMonth).padStart(2, '0'),
                 expiryYear: String(cardData.expiryYear).length === 2 ? `20${cardData.expiryYear}` : String(cardData.expiryYear),
-                ccv: String(cardData.ccv || cardData.cvv)
+                ccv: String(cardData.cvv || cardData.ccv)
             },
             creditCardHolderInfo: {
                 name: holderInfo.name,
                 email: holderInfo.email,
-                cpfCnpj: holderInfo.cpfCnpj.replace(/\D/g, ''),
-                postalCode: holderInfo.postalCode.replace(/\D/g, ''),
+                cpfCnpj: String(holderInfo.cpfCnpj).replace(/\D/g, ''),
+                postalCode: String(holderInfo.postalCode).replace(/\D/g, ''),
                 addressNumber: holderInfo.addressNumber,
-                phone: holderInfo.phone || holderInfo.mobilePhone || '',
-                mobilePhone: holderInfo.mobilePhone || holderInfo.phone || ''
+                phone: holderInfo.phone || '',
+                mobilePhone: holderInfo.phone || ''
             },
-            remoteIp: holderInfo.remoteIp || '127.0.0.1'
+            remoteIp: holderInfo.remoteIp && holderInfo.remoteIp !== '127.0.0.1' ? holderInfo.remoteIp : '189.127.13.12'
         };
 
-        // Handle installments correctly for ASAAS v3
+        // Handle installments based on user feedback
         if (installments > 1) {
             paymentData.installmentCount = installments;
-            paymentData.installmentValue = parseFloat((value / installments).toFixed(2));
-            // For installment payments, 'value' is usually the total value in ASAAS v3
-            paymentData.value = value; 
+            paymentData.totalValue = value; // Total of the purchase
+            // NOTE: installmentValue is not sent, ASAAS calculates it
         } else {
             paymentData.value = value;
         }
