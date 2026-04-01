@@ -12,7 +12,7 @@ const payments = new Map();
  */
 const getProductPrice = () => {
     // Current price of the Gut Reset Protocol
-    return 389.00;
+    return 5.00;
 };
 
 /**
