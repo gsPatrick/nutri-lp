@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const fs = require('fs');
+const fs = require('fs').promises;
+const fsSync = require('fs'); // Keep sync for specific existential checks if needed, but we'll try to go full async
 const path = require('path');
 
 // Store IP locks in memory (PaymentId -> IP Address)
@@ -59,7 +60,7 @@ function verifyAndCheckIp(req, res, next) {
  * GET /api/downloads/:token
  * Renderiza página de download
  */
-router.get('/:token', verifyAndCheckIp, (req, res) => {
+router.get('/:token', verifyAndCheckIp, async (req, res) => {
     const { token } = req.params;
     const { bns } = req.downloadData; // bns = hasBonus boolean
 
@@ -68,8 +69,8 @@ router.get('/:token', verifyAndCheckIp, (req, res) => {
     let mainButtons = '';
     try {
         const mainFolder = path.join(pdfBasePath, 'conteudo_principal');
-        if (fs.existsSync(mainFolder)) {
-            const files = fs.readdirSync(mainFolder);
+        if (await fs.stat(mainFolder).then(() => true).catch(() => false)) {
+            const files = await fs.readdir(mainFolder);
             const pdfFiles = files.filter(f => f.toLowerCase().endsWith('.pdf') && !f.startsWith('._'));
             for (const file of pdfFiles) {
                 const label = file.replace('.pdf', '');
@@ -85,8 +86,8 @@ router.get('/:token', verifyAndCheckIp, (req, res) => {
     if (bns) {
         try {
             const bonusFolder = path.join(pdfBasePath, 'bonus_24h');
-            if (fs.existsSync(bonusFolder)) {
-                const files = fs.readdirSync(bonusFolder);
+            if (await fs.stat(bonusFolder).then(() => true).catch(() => false)) {
+                const files = await fs.readdir(bonusFolder);
                 const pdfFiles = files.filter(f => f.toLowerCase().endsWith('.pdf') && !f.startsWith('._'));
                 for (const file of pdfFiles) {
                     const label = file.replace('.pdf', '');
@@ -141,7 +142,7 @@ router.get('/:token', verifyAndCheckIp, (req, res) => {
  * GET /api/downloads/:token/file/:type/:filename
  * Returns the actual PDF file
  */
-router.get('/:token/file/:type/:filename', verifyAndCheckIp, (req, res) => {
+router.get('/:token/file/:type/:filename', verifyAndCheckIp, async (req, res) => {
     const { type, filename } = req.params;
     const { bns } = req.downloadData;
     
@@ -159,7 +160,10 @@ router.get('/:token/file/:type/:filename', verifyAndCheckIp, (req, res) => {
         return res.status(403).send('Acesso Negado.');
     }
 
-    if (fs.existsSync(targetFile) && filename.toLowerCase().endsWith('.pdf') && !filename.startsWith('._')) {
+    if (await fs.stat(targetFile).then(() => true).catch(() => false) && filename.toLowerCase().endsWith('.pdf') && !filename.startsWith('._')) {
+        // res.download expects a path, it handles reading internally. 
+        // Calling it on express is fine as it's async-friendly, but we use the existing fsSync for compatibility with internal express download if needed, 
+        // actually res.download is fine with just the string path.
         return res.download(targetFile, filename);
     }
 
