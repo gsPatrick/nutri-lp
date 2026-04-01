@@ -12,7 +12,7 @@ const payments = new Map();
  */
 const getProductPrice = () => {
     // Current price of the Gut Reset Protocol
-    return 5.00;
+    return 10.00;
 };
 
 /**
@@ -150,13 +150,6 @@ router.post('/card', async (req, res) => {
         // Generate external reference
         const externalReference = `GR-${uuidv4().slice(0, 8).toUpperCase()}`;
 
-        // Get client IP accurately
-        const remoteIp = req.headers['x-forwarded-for']?.split(',')[0].trim()
-              || req.headers['x-real-ip']
-              || req.socket.remoteAddress;
-
-        console.log('📡 remoteIp capturado:', remoteIp);
-
         // Create card payment
         const payment = await asaas.createCardPayment(
             asaasCustomer.id,
@@ -169,8 +162,7 @@ router.post('/card', async (req, res) => {
                 postalCode: customer.postalCode || '',
                 addressNumber: customer.addressNumber || '',
                 phone: customer.phone || '',
-                mobilePhone: customer.phone || '',
-                remoteIp
+                mobilePhone: customer.phone || ''
             },
             validInstallments,
             externalReference
