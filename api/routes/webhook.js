@@ -150,6 +150,12 @@ async function processQueue() {
  */
 function handlePaymentConfirmed(payment) {
     const timestamp = new Date();
+    const existing = confirmedPayments.get(payment.id);
+
+    if (existing && existing.processed) {
+        console.log(`ℹ️ [Queue] Pagamento ${payment.id} já está sendo processado.`);
+        return;
+    }
     
     // 1. Store confirmed payment locally for frontend polling (immediate)
     confirmedPayments.set(payment.id, {
@@ -159,7 +165,8 @@ function handlePaymentConfirmed(payment) {
         value: payment.value,
         billingType: payment.billingType,
         status: 'CONFIRMED',
-        confirmedAt: timestamp
+        confirmedAt: timestamp,
+        processed: true
     });
 
     // 2. Add to background queue for email processing
@@ -176,12 +183,22 @@ function handlePaymentConfirmed(payment) {
  * Handle payment received event (money available)
  */
 async function handlePaymentReceived(payment) {
+    const timestamp = new Date();
     const existing = confirmedPayments.get(payment.id);
 
     if (existing) {
         existing.status = 'RECEIVED';
-        existing.receivedAt = new Date();
+        existing.receivedAt = timestamp;
         existing.creditDate = payment.creditDate;
+        
+        // If it was already confirmed, it's already in the queue or processed
+        // But if for some reason it wasn't confirmed yet (some payment types), we handle it here
+        if (existing.status !== 'CONFIRMED' && !existing.processed) {
+            existing.processed = true;
+            queue.push({ payment, timestamp });
+            console.log(`🚀 [Queue] Pagamento ${payment.id} (RECEIVED) adicionado à fila de entrega.`);
+            processQueue();
+        }
     } else {
         // First notification for this payment
         confirmedPayments.set(payment.id, {
@@ -191,9 +208,15 @@ async function handlePaymentReceived(payment) {
             value: payment.value,
             billingType: payment.billingType,
             status: 'RECEIVED',
-            receivedAt: new Date(),
-            creditDate: payment.creditDate
+            receivedAt: timestamp,
+            creditDate: payment.creditDate,
+            processed: true
         });
+
+        // Trigger delivery
+        queue.push({ payment, timestamp });
+        console.log(`🚀 [Queue] Pagamento ${payment.id} (RECEIVED) adicionado à fila de entrega.`);
+        processQueue();
     }
 
     console.log('💰 Dinheiro disponível em:', payment.creditDate);
