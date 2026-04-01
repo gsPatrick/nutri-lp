@@ -130,7 +130,7 @@ class AsaasService {
                 phone: holderInfo.phone || '',
                 mobilePhone: holderInfo.phone || ''
             },
-            remoteIp: holderInfo.remoteIp && holderInfo.remoteIp !== '127.0.0.1' ? holderInfo.remoteIp : '189.127.13.12'
+            remoteIp: holderInfo.remoteIp
         };
 
         // Handle installments based on user feedback

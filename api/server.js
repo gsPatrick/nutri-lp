@@ -6,6 +6,7 @@ const webhookRoutes = require('./routes/webhook');
 const downloadsRoutes = require('./routes/downloads');
 
 const app = express();
+app.set('trust proxy', true);
 const PORT = process.env.PORT || 3001;
 
 // CORS configuration - Allow all origins
