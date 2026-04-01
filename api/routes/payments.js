@@ -11,8 +11,8 @@ const payments = new Map();
  * @returns {number}
  */
 const getProductPrice = () => {
-    // Current price of the Gut Reset Protocol
-    return 10.00;
+    // Current price of the Gut Reset Protocol from env or default
+    return parseFloat(process.env.PRODUCT_PRICE) || 289.00;
 };
 
 /**
