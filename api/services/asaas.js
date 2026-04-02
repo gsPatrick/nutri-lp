@@ -177,7 +177,6 @@ class AsaasService {
             delete paymentData.creditCardHolderInfo.addressComplement;
         }
 
-        console.log('🚀 Enviando via LEAN/PAYMENTS...');
         return this.request('/lean/payments', {
             method: 'POST',
             body: JSON.stringify(paymentData)

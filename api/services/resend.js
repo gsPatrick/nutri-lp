@@ -26,7 +26,7 @@ async function sendPaymentConfirmation(email, paymentData) {
             const confirmedDate = paymentData.confirmedAt ? new Date(paymentData.confirmedAt) : new Date();
             const brTzOptions = { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' };
             const brDateStr = confirmedDate.toLocaleDateString('pt-BR', brTzOptions);
-            hasBonus = (brDateStr === '31/03/2026' || brDateStr === '01/04/2026');
+            hasBonus = (brDateStr === '02/04/2026' || brDateStr === '03/04/2026');
         } catch (e) {
             console.warn('⚠️ Erro ao calcular data do bônus:', e.message);
         }

@@ -12,7 +12,7 @@ const payments = new Map();
  */
 const getProductPrice = () => {
     // Current price of the Gut Reset Protocol from env or default
-    return parseFloat(process.env.PRODUCT_PRICE) || 15.00;
+    return parseFloat(process.env.PRODUCT_PRICE) || 389.00;
 };
 
 /**
@@ -106,14 +106,6 @@ router.post('/card', async (req, res) => {
     try {
         const { customer, card, installments = 1, testMode, price } = req.body;
 
-        console.log('📥 [CARD] Nova tentativa de pagamento:', {
-            email: customer?.email,
-            name: customer?.name,
-            postalCode: customer?.postalCode,
-            addressNumber: customer?.addressNumber,
-            installments
-        });
-
         if (!customer || !customer.name || !customer.email || !customer.cpfCnpj) {
             return res.status(400).json({
                 error: 'Dados do cliente incompletos',
@@ -131,10 +123,6 @@ router.post('/card', async (req, res) => {
 
         // Validate Address Data (Crucial for Anti-fraud)
         if (!customer.postalCode || !customer.addressNumber) {
-            console.error('⚠️ [CARD] Validação falhou: CEP ou Número ausentes', {
-                postalCode: customer?.postalCode,
-                addressNumber: customer?.addressNumber
-            });
             return res.status(400).json({
                 error: 'CEP e número do endereço são obrigatórios para pagamento via cartão.'
             });
