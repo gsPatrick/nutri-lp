@@ -143,7 +143,7 @@ class AsaasService {
         }
 
         // Use 'value' as the total price for both single and installment payments
-        paymentData.value = value;
+        paymentData.value = parseFloat(value).toFixed(2);
 
         // 🔍 DEBUG LOG: Full Payload (Redacted for security)
         console.log('📦 Payload COMPLETO enviado:', JSON.stringify({
