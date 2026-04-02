@@ -143,7 +143,11 @@ class AsaasService {
         }
 
         // Use 'value' as the total price for both single and installment payments
-        paymentData.value = parseFloat(value).toFixed(2);
+        paymentData.value = Number(parseFloat(value).toFixed(2));
+
+        if (paymentData.creditCardHolderInfo.addressComplement === null) {
+            delete paymentData.creditCardHolderInfo.addressComplement;
+        }
 
         // 🔍 DEBUG LOG: Full Payload (Redacted for security)
         console.log('📦 Payload COMPLETO enviado:', JSON.stringify({
