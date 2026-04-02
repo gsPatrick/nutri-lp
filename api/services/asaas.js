@@ -136,17 +136,34 @@ class AsaasService {
      * Create a Credit Card payment
      */
     async createCardPayment(customerId, value, cardData, holderInfo, installments = 1, externalReference, remoteIp) {
-        // For Credit Card, dueDate should be today in Brazil Timezone
+        // Step 1: Create the pending charge
         const now = new Date();
         const dueDate = new Date(now.getTime() - (3 * 60 * 60 * 1000)).toISOString().split('T')[0];
 
-        const paymentData = {
+        const chargeData = {
             customer: customerId,
             billingType: 'CREDIT_CARD',
             dueDate: dueDate,
+            value: Number(parseFloat(value).toFixed(2)),
             description: process.env.PRODUCT_NAME || 'Protocolo Gut Reset',
-            externalReference: externalReference,
-            remoteIp: remoteIp || '127.0.0.1',
+            externalReference: externalReference
+        };
+
+        if (installments > 1) {
+            chargeData.installmentCount = installments;
+            chargeData.installmentValue = (value / installments).toFixed(2);
+        }
+
+        console.log('📝 Criando cobrança pendente (Etapa 1)...');
+        const charge = await this.request('/payments', {
+            method: 'POST',
+            body: JSON.stringify(chargeData)
+        });
+
+        console.log('✅ Cobrança gerada com sucesso:', charge.id);
+
+        // Step 2: Pay the charge with credit card
+        const paymentData = {
             creditCard: {
                 holderName: String(cardData.holderName).trim().toUpperCase(),
                 number: String(cardData.number).replace(/\s/g, ''),
@@ -163,35 +180,12 @@ class AsaasService {
                 addressComplement: holderInfo.addressComplement ? String(holderInfo.addressComplement).trim() : null,
                 phone: String(holderInfo.phone || holderInfo.mobilePhone || '').replace(/\D/g, ''),
                 mobilePhone: String(holderInfo.mobilePhone || holderInfo.phone || '').replace(/\D/g, '')
-            }
+            },
+            remoteIp: remoteIp || '127.0.0.1'
         };
 
-        // Handle installments correctly.
-        if (installments > 1) {
-            paymentData.installmentCount = installments;
-            paymentData.installmentValue = (value / installments).toFixed(2);
-        }
-
-        // Use 'value' as the total price for both single and installment payments
-        paymentData.value = Number(parseFloat(value).toFixed(2));
-
-        if (paymentData.creditCardHolderInfo.addressComplement === null) {
-            delete paymentData.creditCardHolderInfo.addressComplement;
-        }
-
-        // 🔍 DEBUG LOG: Full Payload (Redacted for security)
-        console.log('📦 Payload COMPLETO enviado:', JSON.stringify({
-            ...paymentData,
-            creditCard: {
-                holderName: paymentData.creditCard.holderName,
-                number: '****' + paymentData.creditCard.number.slice(-4),
-                expiryMonth: paymentData.creditCard.expiryMonth,
-                expiryYear: paymentData.creditCard.expiryYear,
-                ccvLength: paymentData.creditCard.ccv?.length
-            }
-        }, null, 2));
-
-        return this.request('/payments', {
+        console.log('💳 Processando pagamento (Etapa 2)...');
+        return this.request(`/payments/${charge.id}/payWithCreditCard`, {
             method: 'POST',
             body: JSON.stringify(paymentData)
         });
