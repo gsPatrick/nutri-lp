@@ -151,7 +151,11 @@ router.post('/card', async (req, res) => {
         const externalReference = `GR-${uuidv4().slice(0, 8).toUpperCase()}`;
 
         // Extract Remote IP (Required by ASAAS for Credit Card)
-        const remoteIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+        // Handle proxies by taking the first IP in the list
+        let remoteIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+        if (remoteIp.includes(',')) {
+            remoteIp = remoteIp.split(',')[0].trim();
+        }
 
         // Create card payment
         const payment = await asaas.createCardPayment(
@@ -162,7 +166,7 @@ router.post('/card', async (req, res) => {
                 name: customer.name,
                 email: customer.email,
                 cpfCnpj: customer.cpfCnpj,
-                postalCode: customer.postalCode || '',
+                postalCode: (customer.postalCode || '').replace(/\D/g, ''),
                 addressNumber: customer.addressNumber || '',
                 addressComplement: customer.addressComplement || '',
                 phone: customer.phone || '',

@@ -139,18 +139,19 @@ class AsaasService {
             }
         };
 
-        // Handle installments
+        // Handle installments correctly. For 1x, do NOT send installment fields.
+        // Documentation says: Para cobranças avulsas (1x), não use os atributos installmentCount e installmentValue. Use apenas value.
         if (installments > 1) {
             paymentData.installmentCount = installments;
-            paymentData.totalValue = value; 
-        } else {
-            paymentData.value = value;
         }
 
+        // Use 'value' as the total price for both single and installment payments
+        paymentData.value = value;
+
         // 🔍 DEBUG LOG
-        console.log(`🚀 Enviando cobrança ${installments}x (${paymentData.installmentCount ? 'Parcelado' : 'À vista'}) para ASAAS:`, {
+        console.log(`🚀 Enviando cobrança ${installments}x para ASAAS:`, {
             customerId: paymentData.customer,
-            value: paymentData.value || paymentData.totalValue,
+            totalValue: paymentData.value,
             remoteIp: paymentData.remoteIp,
             dueDate: paymentData.dueDate
         });
