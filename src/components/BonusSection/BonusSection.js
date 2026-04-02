@@ -34,7 +34,14 @@ function useCountdown(targetDateStr) {
 }
 
 export default function BonusSection() {
-    const countdown = useCountdown('2026-04-03T10:00:00-03:00');
+    // 24h starting from the beginning of April 2nd (Midnight)
+    const getTargetDate = () => {
+        const target = new Date('2026-04-02T00:00:00-03:00');
+        target.setHours(target.getHours() + 24);
+        return target;
+    };
+
+    const countdown = useCountdown(getTargetDate());
 
     return (
         <section className={styles.section}>
