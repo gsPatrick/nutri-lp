@@ -39,21 +39,32 @@ class AsaasService {
      * Create or find a customer
      */
     async createCustomer(customerData) {
-        // First, try to find existing customer by email
-        const existingCustomer = await this.findCustomerByEmail(customerData.email);
+        const cleanCpfCnpj = String(customerData.cpfCnpj).replace(/\D/g, '');
+
+        // 1. Try to find by CPF/CNPJ first (stronger link)
+        let existingCustomer = await this.findCustomerByCpfCnpj(cleanCpfCnpj);
+
+        // 2. If not found by CPF, try by email
+        if (!existingCustomer) {
+            existingCustomer = await this.findCustomerByEmail(customerData.email);
+        }
+
+        // 3. If found, update if needed or just return (to ensure data matches)
         if (existingCustomer) {
+            console.log('✅ Cliente existente encontrado no Asaas:', existingCustomer.id);
             return existingCustomer;
         }
 
-        // Create new customer
+        // 4. Create new customer
+        console.log('🆕 Criando novo cliente no Asaas...');
         return this.request('/customers', {
             method: 'POST',
             body: JSON.stringify({
                 name: customerData.name,
                 email: customerData.email,
-                cpfCnpj: customerData.cpfCnpj,
-                phone: customerData.phone,
-                mobilePhone: customerData.phone
+                cpfCnpj: cleanCpfCnpj,
+                phone: String(customerData.phone || '').replace(/\D/g, ''),
+                mobilePhone: String(customerData.phone || '').replace(/\D/g, '')
             })
         });
     }
@@ -61,8 +72,27 @@ class AsaasService {
     async findCustomerByEmail(email) {
         try {
             const response = await this.request(`/customers?email=${encodeURIComponent(email)}`);
-            return response.data?.[0] || null;
-        } catch {
+            // Return only if results exist
+            if (response.data && response.data.length > 0) {
+                return response.data[0];
+            }
+            return null;
+        } catch (error) {
+            console.warn('⚠️ Erro ao buscar cliente por e-mail:', error.message);
+            return null;
+        }
+    }
+
+    async findCustomerByCpfCnpj(cpfCnpj) {
+        try {
+            const cleanCpf = String(cpfCnpj).replace(/\D/g, '');
+            const response = await this.request(`/customers?cpfCnpj=${cleanCpf}`);
+            if (response.data && response.data.length > 0) {
+                return response.data[0];
+            }
+            return null;
+        } catch (error) {
+            console.warn('⚠️ Erro ao buscar cliente por CPF/CNPJ:', error.message);
             return null;
         }
     }
