@@ -145,13 +145,15 @@ class AsaasService {
         // Use 'value' as the total price for both single and installment payments
         paymentData.value = value;
 
-        // 🔍 DEBUG LOG
-        console.log(`🚀 Enviando cobrança ${installments}x para ASAAS:`, {
-            customerId: paymentData.customer,
-            totalValue: paymentData.value,
-            remoteIp: paymentData.remoteIp,
-            dueDate: paymentData.dueDate
-        });
+        // 🔍 DEBUG LOG: Full Payload (Redacted)
+        console.log('📦 Payload completo CARTÃO:', JSON.stringify({
+            ...paymentData,
+            creditCard: {
+                ...paymentData.creditCard,
+                number: paymentData.creditCard.number.substring(0, 6) + '******' + paymentData.creditCard.number.substring(12),
+                ccv: '***'
+            }
+        }, null, 2));
 
         return this.request('/payments', {
             method: 'POST',
