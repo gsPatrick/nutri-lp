@@ -66,26 +66,26 @@ router.post('/asaas', async (req, res) => {
             case 'PAYMENT_OVERDUE':
                 console.log('⏰ Pagamento vencido:', payment.id);
                 break;
-
             case 'PAYMENT_REFUNDED':
                 console.log('↩️ Pagamento estornado:', payment.id);
                 await handlePaymentRefunded(payment);
                 break;
 
-            case 'PAYMENT_PARTIALLY_REFUNDED':
-                console.log('↩️ Pagamento parcialmente estornado:', payment.id);
+            case 'PAYMENT_CONFIRMED':
+            case 'PAYMENT_RECEIVED':
+                await handlePaymentSuccess(payment);
                 break;
-
-            case 'PAYMENT_CHARGEBACK_REQUESTED':
-                console.log('🚨 Chargeback solicitado:', payment.id);
+            case 'PAYMENT_CREDIT_CARD_CAPTURE_REFUSED':
+                console.warn(`❌ Pagamento Recusado (Cartão): ${payment.id} - Motivo: ${payment.refusalReason || 'Não informado'}`);
                 break;
-
+            case 'PAYMENT_OVERDUE':
+                console.log(`⏰ Cobrança vencida: ${payment.id}`);
+                break;
             case 'PAYMENT_DELETED':
-                console.log('🗑️ Cobrança deletada:', payment.id);
+                console.log(`🗑️ Cobrança removida: ${payment.id}`);
                 break;
-
             default:
-                console.log('📌 Evento não tratado:', event);
+                console.log(`📌 Evento não tratado: ${event}`);
         }
 
         // Always return 200 to confirm receipt
