@@ -285,3 +285,13 @@
 .badge svg {
     color: var(--accent);
 }
+
+.minimalistRefund {
+    font-size: 0.72rem;
+    opacity: 0.6;
+    margin-top: -0.8rem;
+    margin-bottom: 1.8rem;
+    line-height: 1.4;
+    font-weight: 300;
+    font-style: italic;
+}

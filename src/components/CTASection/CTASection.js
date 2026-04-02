@@ -92,6 +92,11 @@ export default function CTASection() {
                         </div>
                     </div>
 
+                    {/* Refund Policy Note */}
+                    <p className={styles.refundPolicy}>
+                        Após a confirmação da compra, não será possível solicitar reembolso, devido ao acesso imediato ao conteúdo.
+                    </p>
+
                     <h2 className={styles.headline}>
                         Sua transformação começa<br />
                         <span className={styles.highlight}>quando você decide agir.</span>
@@ -130,6 +135,10 @@ export default function CTASection() {
                         <a href="/checkout" className={styles.ctaBtn}>
                             Garantir Minha Vaga Agora
                         </a>
+
+                        <p className={styles.minimalistRefund}>
+                            *Após a confirmação da compra, não será possível solicitar reembolso, devido ao acesso imediato ao conteúdo.
+                        </p>
 
                         {/* Trust Badges */}
                         <div className={styles.trustBadges}>

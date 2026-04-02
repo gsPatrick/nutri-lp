@@ -43,6 +43,11 @@ export default function Footer() {
                 {/* Nutritionist Name */}
                 <p className={styles.signature}>Por Gut Reset</p>
 
+                {/* Refund Policy Note */}
+                <p className={styles.refundPolicy}>
+                    Após a confirmação da compra, não será possível solicitar reembolso, devido ao acesso imediato ao conteúdo.
+                </p>
+
                 {/* Copyright */}
                 <p className={styles.copyright}>
                     © {currentYear} Todos os direitos reservados.

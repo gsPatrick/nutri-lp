@@ -460,6 +460,11 @@ export default function CheckoutPage() {
                         </div>
                     )}
 
+                    {/* Refund Policy Note */}
+                    <p className={styles.refundPolicy}>
+                        Após a confirmação da compra, não será possível solicitar reembolso, devido ao acesso imediato ao conteúdo.
+                    </p>
+
                     {/* Payment Content */}
                     <div className={styles.paymentContent}>
                         {paymentMethod === 'pix' ? (
@@ -509,6 +514,9 @@ export default function CheckoutPage() {
                                                 'Já fiz o pagamento'
                                             )}
                                         </button>
+                                        <p className={styles.minimalistDisclaimer}>
+                                            Após a confirmação da compra, não será possível solicitar reembolso, devido ao acesso imediato ao conteúdo.
+                                        </p>
                                     </>
                                 )}
                             </div>
@@ -590,6 +598,9 @@ export default function CheckoutPage() {
                                         `Pagar R$ ${formatPrice(productConfig.productPrice)}`
                                     )}
                                 </button>
+                                <p className={styles.minimalistDisclaimer}>
+                                    Após a confirmação da compra, não será possível solicitar reembolso, devido ao acesso imediato ao conteúdo.
+                                </p>
                             </form>
                         )}
                     </div>
@@ -600,7 +611,7 @@ export default function CheckoutPage() {
                             <Shield size={20} />
                             <span>Pagamento 100% Seguro</span>
                         </div>
-                        <p className={styles.disclaimer}>Produto sem reembolso</p>
+                        <p className={styles.disclaimer}>Após a confirmação da compra, não será possível solicitar reembolso, devido ao acesso imediato ao conteúdo.</p>
                     </div>
                 </motion.div>
 

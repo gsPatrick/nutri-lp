@@ -61,6 +61,26 @@ function SucessoContent() {
                     <em>Verifique a sua caixa de entrada, caixa de SPAM e a aba &quot;Promoções&quot;.</em>
                 </p>
             </motion.div>
+
+            <motion.div
+                style={{ 
+                    backgroundColor: '#FFF9E6', 
+                    padding: '20px', 
+                    borderRadius: '10px', 
+                    marginTop: '25px', 
+                    border: '1px solid #FFEEBA', 
+                    color: '#856404', 
+                    fontSize: '1rem', 
+                    fontWeight: '500', 
+                    lineHeight: '1.5',
+                    textAlign: 'center'
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+            >
+                Após a confirmação da compra, não será possível solicitar reembolso, devido ao acesso imediato ao conteúdo.
+            </motion.div>
         </motion.div>
     );
 }
