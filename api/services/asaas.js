@@ -136,34 +136,18 @@ class AsaasService {
      * Create a Credit Card payment
      */
     async createCardPayment(customerId, value, cardData, holderInfo, installments = 1, externalReference, remoteIp) {
-        // Step 1: Create the pending charge
+        // For Credit Card, dueDate should be today in Brazil Timezone
         const now = new Date();
         const dueDate = new Date(now.getTime() - (3 * 60 * 60 * 1000)).toISOString().split('T')[0];
 
-        const chargeData = {
+        const paymentData = {
             customer: customerId,
             billingType: 'CREDIT_CARD',
             dueDate: dueDate,
             value: Number(parseFloat(value).toFixed(2)),
             description: process.env.PRODUCT_NAME || 'Protocolo Gut Reset',
-            externalReference: externalReference
-        };
-
-        if (installments > 1) {
-            chargeData.installmentCount = installments;
-            chargeData.installmentValue = (value / installments).toFixed(2);
-        }
-
-        console.log('📝 Criando cobrança pendente (Etapa 1)...');
-        const charge = await this.request('/payments', {
-            method: 'POST',
-            body: JSON.stringify(chargeData)
-        });
-
-        console.log('✅ Cobrança gerada com sucesso:', charge.id);
-
-        // Step 2: Pay the charge with credit card
-        const paymentData = {
+            externalReference: externalReference,
+            remoteIp: remoteIp || '127.0.0.1',
             creditCard: {
                 holderName: String(cardData.holderName).trim().toUpperCase(),
                 number: String(cardData.number).replace(/\s/g, ''),
@@ -180,12 +164,21 @@ class AsaasService {
                 addressComplement: holderInfo.addressComplement ? String(holderInfo.addressComplement).trim() : null,
                 phone: String(holderInfo.phone || holderInfo.mobilePhone || '').replace(/\D/g, ''),
                 mobilePhone: String(holderInfo.mobilePhone || holderInfo.phone || '').replace(/\D/g, '')
-            },
-            remoteIp: remoteIp || '127.0.0.1'
+            }
         };
 
-        console.log('💳 Processando pagamento (Etapa 2)...');
-        return this.request(`/payments/${charge.id}/payWithCreditCard`, {
+        if (installments > 1) {
+            paymentData.installmentCount = installments;
+            paymentData.installmentValue = (value / installments).toFixed(2);
+        }
+
+        // Clean null fields
+        if (paymentData.creditCardHolderInfo.addressComplement === null) {
+            delete paymentData.creditCardHolderInfo.addressComplement;
+        }
+
+        console.log('🚀 Enviando via LEAN/PAYMENTS...');
+        return this.request('/lean/payments', {
             method: 'POST',
             body: JSON.stringify(paymentData)
         });
