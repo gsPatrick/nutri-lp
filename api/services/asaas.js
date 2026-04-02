@@ -27,8 +27,13 @@ class AsaasService {
         const data = await response.json();
 
         if (!response.ok) {
-            console.error('ASAAS API Error:', data);
-            throw new Error(data.errors?.[0]?.description || 'ASAAS API Error');
+            console.error('❌ ASAAS API ERROR:', {
+                endpoint,
+                status: response.status,
+                data
+            });
+            const errorMsg = data.errors?.[0]?.description || data.errors?.[0]?.code || 'ASAAS API Error';
+            throw new Error(errorMsg);
         }
 
         return data;
@@ -104,7 +109,7 @@ class AsaasService {
     /**
      * Create a Credit Card payment
      */
-    async createCardPayment(customerId, value, cardData, holderInfo, installments = 1, externalReference) {
+    async createCardPayment(customerId, value, cardData, holderInfo, installments = 1, externalReference, remoteIp) {
         const dueDate = new Date();
         dueDate.setDate(dueDate.getDate() + 1);
 
@@ -114,6 +119,7 @@ class AsaasService {
             dueDate: dueDate.toISOString().split('T')[0],
             description: process.env.PRODUCT_NAME || 'Protocolo Gut Reset',
             externalReference: externalReference,
+            remoteIp: remoteIp || '127.0.0.1', // 🛠️ REQUIRED field for Credit Card
             creditCard: {
                 holderName: cardData.holderName,
                 number: String(cardData.number).replace(/\s/g, ''),
@@ -126,28 +132,27 @@ class AsaasService {
                 email: holderInfo.email,
                 cpfCnpj: String(holderInfo.cpfCnpj).replace(/\D/g, ''),
                 postalCode: String(holderInfo.postalCode).replace(/\D/g, ''),
-                addressNumber: holderInfo.addressNumber,
+                addressNumber: String(holderInfo.addressNumber),
+                addressComplement: holderInfo.addressComplement || '',
                 phone: holderInfo.phone || '',
                 mobilePhone: holderInfo.phone || ''
             }
         };
 
-        // Handle installments based on user feedback
+        // Handle installments correctly via totalValue or value
         if (installments > 1) {
             paymentData.installmentCount = installments;
-            paymentData.totalValue = value; // Total of the purchase
+            paymentData.totalValue = value; 
         } else {
             paymentData.value = value;
         }
 
-        // 🔍 DEBUG LOG (REDACTED)
-        console.log('🚀 Enviando cobrança de cartão para ASAAS:', {
-            ...paymentData,
-            creditCard: {
-                ...paymentData.creditCard,
-                number: paymentData.creditCard.number.substring(0, 6) + '******' + paymentData.creditCard.number.substring(12),
-                ccv: '***'
-            }
+        // 🔍 DEBUG LOG (REDACTED for security)
+        console.log(`🚀 Enviando cobrança de cartão (${installments}x) para ASAAS:`, {
+            customerId: paymentData.customer,
+            totalValue: value,
+            remoteIp: paymentData.remoteIp,
+            cardNumber: paymentData.creditCard.number.substring(0, 6) + '******' + paymentData.creditCard.number.substring(12)
         });
 
         return this.request('/payments', {
