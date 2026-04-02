@@ -27,11 +27,7 @@ class AsaasService {
         const data = await response.json();
 
         if (!response.ok) {
-            console.error('❌ ASAAS API ERROR:', {
-                endpoint,
-                status: response.status,
-                data
-            });
+            console.error('❌ ASAAS API ERROR:', JSON.stringify(data, null, 2));
             const errorMsg = data.errors?.[0]?.description || data.errors?.[0]?.code || 'ASAAS API Error';
             throw new Error(errorMsg);
         }
@@ -110,8 +106,9 @@ class AsaasService {
      * Create a Credit Card payment
      */
     async createCardPayment(customerId, value, cardData, holderInfo, installments = 1, externalReference, remoteIp) {
-        // For Credit Card, dueDate should be today for immediate capture
-        const dueDate = new Date().toISOString().split('T')[0];
+        // For Credit Card, dueDate should be today in Brazil Timezone
+        const now = new Date();
+        const dueDate = new Date(now.getTime() - (3 * 60 * 60 * 1000)).toISOString().split('T')[0];
 
         const paymentData = {
             customer: customerId,
@@ -121,21 +118,21 @@ class AsaasService {
             externalReference: externalReference,
             remoteIp: remoteIp || '127.0.0.1',
             creditCard: {
-                holderName: cardData.holderName,
+                holderName: String(cardData.holderName).trim().toUpperCase(),
                 number: String(cardData.number).replace(/\s/g, ''),
                 expiryMonth: String(cardData.expiryMonth).padStart(2, '0'),
                 expiryYear: String(cardData.expiryYear).length === 2 ? `20${cardData.expiryYear}` : String(cardData.expiryYear),
                 ccv: String(cardData.cvv || cardData.ccv)
             },
             creditCardHolderInfo: {
-                name: holderInfo.name,
-                email: holderInfo.email,
+                name: String(holderInfo.name).trim(),
+                email: String(holderInfo.email).trim().toLowerCase(),
                 cpfCnpj: String(holderInfo.cpfCnpj).replace(/\D/g, ''),
                 postalCode: String(holderInfo.postalCode).replace(/\D/g, ''),
-                addressNumber: String(holderInfo.addressNumber),
-                addressComplement: holderInfo.addressComplement || null,
-                phone: holderInfo.phone || '',
-                mobilePhone: holderInfo.phone || ''
+                addressNumber: String(holderInfo.addressNumber).trim(),
+                addressComplement: holderInfo.addressComplement ? String(holderInfo.addressComplement).trim() : null,
+                phone: String(holderInfo.phone || holderInfo.mobilePhone || '').replace(/\D/g, ''),
+                mobilePhone: String(holderInfo.mobilePhone || holderInfo.phone || '').replace(/\D/g, '')
             }
         };
 
