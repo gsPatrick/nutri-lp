@@ -34,7 +34,7 @@ function useCountdown(targetDateStr) {
 }
 
 export default function BonusSection() {
-    const countdown = useCountdown('2026-04-03T10:25:00-03:00');
+    const countdown = useCountdown('2026-04-03T10:00:00-03:00');
 
     return (
         <section className={styles.section}>
