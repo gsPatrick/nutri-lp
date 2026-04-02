@@ -136,10 +136,10 @@ class AsaasService {
             }
         };
 
-        // Handle installments correctly. For 1x, do NOT send installment fields.
-        // Documentation says: Para cobranças avulsas (1x), não use os atributos installmentCount e installmentValue. Use apenas value.
+        // Handle installments correctly.
         if (installments > 1) {
             paymentData.installmentCount = installments;
+            paymentData.installmentValue = (value / installments).toFixed(2);
         }
 
         // Use 'value' as the total price for both single and installment payments

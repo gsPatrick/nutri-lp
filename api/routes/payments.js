@@ -121,6 +121,13 @@ router.post('/card', async (req, res) => {
             });
         }
 
+        // Validate Address Data (Crucial for Anti-fraud)
+        if (!customer.postalCode || !customer.addressNumber) {
+            return res.status(400).json({
+                error: 'CEP e número do endereço são obrigatórios para pagamento via cartão.'
+            });
+        }
+
         // Use test price if in test mode, otherwise use product price
         let productPrice = getProductPrice();
         if (testMode && price) {
@@ -132,6 +139,14 @@ router.post('/card', async (req, res) => {
             return res.status(400).json({
                 error: 'O valor mínimo para cobrança via Cartão é R$ 5,00'
             });
+        }
+
+        // Handle installments correctly.
+        let installmentCount = 1;
+        let installmentValue = productPrice;
+        if (installments > 1) {
+            installmentCount = installments;
+            installmentValue = (productPrice / installments).toFixed(2);
         }
 
         // Validate installments
