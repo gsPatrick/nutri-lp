@@ -110,16 +110,16 @@ class AsaasService {
      * Create a Credit Card payment
      */
     async createCardPayment(customerId, value, cardData, holderInfo, installments = 1, externalReference, remoteIp) {
-        const dueDate = new Date();
-        dueDate.setDate(dueDate.getDate() + 1);
+        // For Credit Card, dueDate should be today for immediate capture
+        const dueDate = new Date().toISOString().split('T')[0];
 
         const paymentData = {
             customer: customerId,
             billingType: 'CREDIT_CARD',
-            dueDate: dueDate.toISOString().split('T')[0],
+            dueDate: dueDate,
             description: process.env.PRODUCT_NAME || 'Protocolo Gut Reset',
             externalReference: externalReference,
-            remoteIp: remoteIp || '127.0.0.1', // 🛠️ REQUIRED field for Credit Card
+            remoteIp: remoteIp || '127.0.0.1',
             creditCard: {
                 holderName: cardData.holderName,
                 number: String(cardData.number).replace(/\s/g, ''),
@@ -133,13 +133,13 @@ class AsaasService {
                 cpfCnpj: String(holderInfo.cpfCnpj).replace(/\D/g, ''),
                 postalCode: String(holderInfo.postalCode).replace(/\D/g, ''),
                 addressNumber: String(holderInfo.addressNumber),
-                addressComplement: holderInfo.addressComplement || '',
+                addressComplement: holderInfo.addressComplement || null,
                 phone: holderInfo.phone || '',
                 mobilePhone: holderInfo.phone || ''
             }
         };
 
-        // Handle installments correctly via totalValue or value
+        // Handle installments
         if (installments > 1) {
             paymentData.installmentCount = installments;
             paymentData.totalValue = value; 
@@ -147,12 +147,12 @@ class AsaasService {
             paymentData.value = value;
         }
 
-        // 🔍 DEBUG LOG (REDACTED for security)
-        console.log(`🚀 Enviando cobrança de cartão (${installments}x) para ASAAS:`, {
+        // 🔍 DEBUG LOG
+        console.log(`🚀 Enviando cobrança ${installments}x (${paymentData.installmentCount ? 'Parcelado' : 'À vista'}) para ASAAS:`, {
             customerId: paymentData.customer,
-            totalValue: value,
+            value: paymentData.value || paymentData.totalValue,
             remoteIp: paymentData.remoteIp,
-            cardNumber: paymentData.creditCard.number.substring(0, 6) + '******' + paymentData.creditCard.number.substring(12)
+            dueDate: paymentData.dueDate
         });
 
         return this.request('/payments', {
