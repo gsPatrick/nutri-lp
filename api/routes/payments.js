@@ -12,7 +12,7 @@ const payments = new Map();
  */
 const getProductPrice = () => {
     // Current price of the Gut Reset Protocol from env or default
-    return parseFloat(process.env.PRODUCT_PRICE) || 289.00;
+    return parseFloat(process.env.PRODUCT_PRICE) || 15.00;
 };
 
 /**
@@ -267,7 +267,7 @@ router.get('/config', (req, res) => {
  */
 router.post('/checkout', async (req, res) => {
     try {
-        const productPrice = getProductPrice();
+        const productPrice = getProductPrice() || 15.00;
         const maxInstallments = getMaxInstallments(productPrice);
 
         const checkout = await asaas.createCheckout([
