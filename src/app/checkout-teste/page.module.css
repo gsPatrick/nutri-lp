@@ -1,0 +1,512 @@
+.main {
+    min-height: 100vh;
+    background: radial-gradient(circle at top right, #0d2e24 0%, #000 100%);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
+    padding-top: 5rem;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Luxury Glows */
+.main::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(46, 139, 106, 0.2) 0%, transparent 70%);
+    pointer-events: none;
+    filter: blur(100px);
+}
+
+.main::after {
+    content: '';
+    position: absolute;
+    bottom: -10%;
+    right: -10%;
+    width: 50%;
+    height: 50%;
+    background: radial-gradient(circle, rgba(212, 163, 115, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+    filter: blur(100px);
+}
+
+.layout {
+    display: flex;
+    gap: 3rem;
+    width: 100%;
+    max-width: 1100px;
+    align-items: flex-start;
+    position: relative;
+    z-index: 1;
+}
+
+.container {
+    flex: 1;
+    background: rgba(10, 25, 20, 0.85);
+    backdrop-filter: blur(50px);
+    -webkit-backdrop-filter: blur(50px);
+    border: 1px solid rgba(46, 139, 106, 0.3);
+    border-radius: 32px;
+    padding: 3.5rem;
+    color: white;
+    box-shadow: 0 50px 120px rgba(0, 0, 0, 0.8);
+}
+
+.benefitsSidebar {
+    width: 400px;
+    position: sticky;
+    top: 5rem;
+}
+
+.benefitsContent {
+    background: rgba(10, 25, 20, 0.7);
+    border: 1px solid rgba(212, 163, 115, 0.2);
+    backdrop-filter: blur(30px);
+    border-radius: 32px;
+    padding: 2.5rem;
+    color: white;
+}
+
+.benefitsTitle {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    margin-bottom: 2.5rem;
+    color: var(--accent);
+}
+
+.benefitsList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.benefitItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.checkIcon {
+    color: var(--primary-green);
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.summaryNote {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.95rem;
+    opacity: 0.7;
+    line-height: 1.7;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.title {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    margin-bottom: 0.5rem;
+    color: white;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    color: var(--accent);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+/* Order Summary */
+.orderSummary {
+    background: rgba(46, 139, 106, 0.1);
+    border: 1px solid rgba(46, 139, 106, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+}
+
+.orderSummary h3 {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    opacity: 1;
+    margin-bottom: 1.5rem;
+}
+
+.orderItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 1.1rem;
+}
+
+.price {
+    font-family: var(--font-heading);
+    color: white;
+    font-weight: 400;
+    font-size: 1.4rem;
+}
+
+.orderTotal {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 1.5rem;
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    color: var(--accent);
+}
+
+.installments {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    opacity: 0.7;
+    text-align: right;
+    margin-top: 0.5rem;
+}
+
+/* Customer Section */
+.customerSection {
+    margin-bottom: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.customerSection h3 {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    opacity: 0.6;
+    margin-bottom: 0.5rem;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    padding: 1.25rem;
+    background: rgba(46, 139, 106, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tab:hover {
+    background: rgba(46, 139, 106, 0.08);
+    border-color: rgba(212, 163, 115, 0.4);
+}
+
+.tab.active {
+    background: rgba(212, 163, 115, 0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Payment Content */
+.paymentContent {
+    margin-bottom: 2.5rem;
+}
+
+/* PIX Section */
+.pixSection {
+    text-align: center;
+}
+
+.qrCode {
+    margin: 2rem 0;
+    display: flex;
+    justify-content: center;
+}
+
+.qrImage {
+    width: 220px;
+    height: 220px;
+    padding: 1.25rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+}
+
+.pixInstructions {
+    font-size: 1rem;
+    opacity: 0.8;
+    margin-bottom: 2rem;
+}
+
+.copyButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.2rem;
+    background: rgba(46, 139, 106, 0.1);
+    border: 1px solid rgba(46, 139, 106, 0.2);
+    border-radius: 14px;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 2rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.copyButton:hover {
+    background: rgba(46, 139, 106, 0.2);
+    border-color: var(--accent);
+}
+
+/* Card Form */
+.cardForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+/* Form Elements */
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+}
+
+.formGroup label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.6;
+    margin-bottom: 0.25rem;
+}
+
+.formGroup input, .select {
+    width: 100%;
+    padding: 1.25rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(46, 139, 106, 0.25);
+    border-radius: 14px;
+    color: white;
+    font-size: 1.05rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.formGroup input:focus, .select:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: rgba(46, 139, 106, 0.05);
+    box-shadow: 0 0 15px rgba(212, 163, 115, 0.1);
+}
+
+.formGroup input::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem;
+}
+
+/* Select Dropdown */
+.select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23D4A373' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1.25rem center;
+    background-size: 1.2rem;
+}
+
+.select option {
+    background: #0d2e24;
+    color: white;
+}
+
+/* Submit Button */
+.submitButton {
+    width: 100%;
+    padding: 1.4rem;
+    background: var(--accent);
+    border: none;
+    border-radius: 16px;
+    color: #000;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-top: 1.5rem;
+    box-shadow: 0 20px 50px rgba(212, 163, 115, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.submitButton:hover:not(:disabled) {
+    transform: translateY(-5px);
+    background: #e5b383;
+    box-shadow: 0 35px 70px rgba(212, 163, 115, 0.4);
+}
+
+.submitButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #444;
+}
+
+/* Error Message */
+.errorMessage {
+    background: rgba(255, 100, 100, 0.15);
+    border: 1px solid rgba(255, 100, 100, 0.3);
+    color: #ffcccc;
+    padding: 1.25rem;
+    border-radius: 14px;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+/* Trust */
+.trust {
+    margin-top: 2.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+}
+
+.trustBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+}
+
+.trustBadge svg {
+    color: var(--primary-green);
+}
+
+.disclaimer {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 0.8rem;
+    line-height: 1.5;
+    font-weight: 300;
+}
+
+.minimalistDisclaimer {
+    font-size: 0.7rem;
+    opacity: 0.5;
+    margin-top: 0.5rem;
+    text-align: center;
+    line-height: 1.4;
+    color: white;
+    font-weight: 300;
+}
+
+/* Spinner Animation */
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 1000px) {
+    .layout {
+        flex-direction: column;
+        max-width: 600px;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .benefitsSidebar {
+        width: 100%;
+        position: static;
+        order: 2;
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 550px) {
+    .main {
+        padding: 1rem;
+        padding-top: 3rem;
+    }
+
+    .container {
+        padding: 2.5rem 1.5rem;
+        border-radius: 24px;
+    }
+
+    .title {
+        font-size: 2.2rem;
+    }
+
+    .price {
+        font-size: 1.2rem;
+    }
+
+    .orderTotal {
+        font-size: 1.6rem;
+    }
+
+    .formRow {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .tabs {
+        gap: 0.5rem;
+    }
+
+    .tab {
+        padding: 1rem;
+        font-size: 0.85rem;
+    }
+}
