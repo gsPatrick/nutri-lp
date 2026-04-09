@@ -64,7 +64,11 @@ class AsaasService {
                 email: customerData.email,
                 cpfCnpj: cleanCpfCnpj,
                 phone: String(customerData.phone || '').replace(/\D/g, ''),
-                mobilePhone: String(customerData.phone || '').replace(/\D/g, '')
+                mobilePhone: String(customerData.phone || '').replace(/\D/g, ''),
+                postalCode: String(customerData.postalCode || '').replace(/\D/g, ''),
+                address: customerData.address || '',
+                addressNumber: customerData.addressNumber || '',
+                notificationDisabled: true
             })
         });
     }
@@ -137,8 +141,8 @@ class AsaasService {
      */
     async createCardPayment(customerId, value, cardData, holderInfo, installments = 1, externalReference, remoteIp) {
         // For Credit Card, dueDate should be today in Brazil Timezone
-        const now = new Date();
-        const dueDate = new Date(now.getTime() - (3 * 60 * 60 * 1000)).toISOString().split('T')[0];
+        // Set dueDate to today's date in YYYY-MM-DD format (ISO works for today/tomorrow)
+        const dueDate = new Date().toISOString().split('T')[0];
 
         const paymentData = {
             customer: customerId,
@@ -179,7 +183,7 @@ class AsaasService {
             delete paymentData.creditCardHolderInfo.addressComplement;
         }
 
-        return this.request('/lean/payments', {
+        return this.request('/payments', {
             method: 'POST',
             body: JSON.stringify(paymentData)
         });

@@ -127,8 +127,8 @@ export default function CheckoutTestePage() {
     };
 
     const validateCustomer = () => {
-        if (!customer.name || !customer.email || !customer.cpfCnpj || !customer.postalCode || !customer.addressNumber) {
-            setError('Preencha todos os dados (incluindo endereço)');
+        if (!customer.name || !customer.email || !customer.cpfCnpj || !customer.phone || !customer.postalCode || !customer.addressNumber) {
+            setError('Preencha todos os dados (incluindo telefone e endereço)');
             return false;
         }
         const cpf = customer.cpfCnpj.replace(/\D/g, '');
@@ -295,7 +295,10 @@ export default function CheckoutTestePage() {
                         <div className={styles.formGroup}><input type="email" name="email" placeholder="E-mail" value={customer.email} onChange={handleCustomerChange} required /></div>
                         <div className={styles.formRow}>
                             <div className={styles.formGroup}><input type="text" name="cpfCnpj" placeholder="CPF" value={customer.cpfCnpj} onChange={handleCustomerChange} maxLength={14} required /></div>
-                            <div className={styles.formGroup}><input type="text" name="phone" placeholder="Telefone" value={customer.phone} onChange={handleCustomerChange} /></div>
+                            <div className={styles.formGroup}>
+                                <label className={styles.fieldLabel}>Telefone / WhatsApp *</label>
+                                <input type="text" name="phone" placeholder="(00) 00000-0000" value={customer.phone} onChange={handleCustomerChange} required />
+                            </div>
                         </div>
                         <div className={styles.formRow}>
                             <div className={styles.formGroup}>

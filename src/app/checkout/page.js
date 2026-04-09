@@ -144,8 +144,8 @@ export default function CheckoutPage() {
     };
 
     const validateCustomer = () => {
-        if (!customer.name || !customer.email || !customer.cpfCnpj || !customer.postalCode || !customer.addressNumber) {
-            setError('Preencha todos os dados (incluindo endereço)');
+        if (!customer.name || !customer.email || !customer.cpfCnpj || !customer.phone || !customer.postalCode || !customer.addressNumber) {
+            setError('Preencha todos os dados (incluindo telefone e endereço)');
             return false;
         }
         // Basic CPF validation (11 digits)
@@ -401,12 +401,14 @@ export default function CheckoutPage() {
                                 />
                             </div>
                             <div className={styles.formGroup}>
+                                <label className={styles.fieldLabel}>Telefone / WhatsApp *</label>
                                 <input
                                     type="text"
                                     name="phone"
-                                    placeholder="Telefone"
+                                    placeholder="(00) 00000-0000"
                                     value={customer.phone}
                                     onChange={handleCustomerChange}
+                                    required
                                 />
                             </div>
                         </div>
