@@ -303,7 +303,8 @@ export default function CheckoutPage() {
             }
 
         } catch (err) {
-            setError(err.message);
+            console.error('Erro no pagamento:', err);
+            setError(`Ocorreu um erro: ${err.message}. Verifique os dados do cartão e do endereço (CEP e Número).`);
         } finally {
             setIsProcessing(false);
         }
@@ -411,10 +412,11 @@ export default function CheckoutPage() {
                         </div>
                         <div className={styles.formRow}>
                             <div className={styles.formGroup}>
+                                <label className={styles.fieldLabel}>CEP (Obrigatório para Cartão)</label>
                                 <input
                                     type="text"
                                     name="postalCode"
-                                    placeholder="CEP"
+                                    placeholder="00000-000"
                                     value={customer.postalCode}
                                     onChange={handleCustomerChange}
                                     maxLength={9}
@@ -422,10 +424,11 @@ export default function CheckoutPage() {
                                 />
                             </div>
                             <div className={styles.formGroup}>
+                                <label className={styles.fieldLabel}>Nº Residência</label>
                                 <input
                                     type="text"
                                     name="addressNumber"
-                                    placeholder="Nº (Ex: 123)"
+                                    placeholder="Ex: 123"
                                     title="Apenas o número da residência"
                                     value={customer.addressNumber}
                                     onChange={handleCustomerChange}

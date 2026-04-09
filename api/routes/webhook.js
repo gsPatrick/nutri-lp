@@ -54,35 +54,26 @@ router.post('/asaas', async (req, res) => {
                 break;
 
             case 'PAYMENT_CONFIRMED':
-                console.log('✅ Pagamento confirmado:', payment.id);
-                await handlePaymentConfirmed(payment);
-                break;
-
             case 'PAYMENT_RECEIVED':
-                console.log('💰 Pagamento recebido:', payment.id);
-                await handlePaymentReceived(payment);
+                console.log(`✅ Evento de Sucesso: ${event} para ${payment.id}`);
+                await handlePaymentSuccess(payment);
+                break;
+            
+            case 'PAYMENT_CREDIT_CARD_CAPTURE_REFUSED':
+                console.warn(`❌ [REFUSED] Pagamento ${payment.id} RECUSADO. Motivo: ${payment.refusalReason || 'Não informado pela bandeira'}`);
                 break;
 
             case 'PAYMENT_OVERDUE':
                 console.log('⏰ Pagamento vencido:', payment.id);
                 break;
+
             case 'PAYMENT_REFUNDED':
                 console.log('↩️ Pagamento estornado:', payment.id);
                 await handlePaymentRefunded(payment);
                 break;
 
-            case 'PAYMENT_CONFIRMED':
-            case 'PAYMENT_RECEIVED':
-                await handlePaymentSuccess(payment);
-                break;
-            case 'PAYMENT_CREDIT_CARD_CAPTURE_REFUSED':
-                console.warn(`❌ Pagamento Recusado (Cartão): ${payment.id} - Motivo: ${payment.refusalReason || 'Não informado'}`);
-                break;
-            case 'PAYMENT_OVERDUE':
-                console.log(`⏰ Cobrança vencida: ${payment.id}`);
-                break;
             case 'PAYMENT_DELETED':
-                console.log(`🗑️ Cobrança removida: ${payment.id}`);
+                console.log('🗑️ Cobrança deletada:', payment.id);
                 break;
             default:
                 console.log(`📌 Evento não tratado: ${event}`);
@@ -106,99 +97,100 @@ router.post('/asaas', async (req, res) => {
 });
 
 
+// Persistent Deduplication (prevents multiple emails for installments or retries)
+// We use a Set for memory and in production this should be a DB table
+const processedPurchases = new Set(); 
+
+// Background Task Queue
+const queue = [];
+let isProcessingQueue = false;
+
 /**
- * Handle payment confirmed event
+ * Process the background queue one by one
  */
-async function handlePaymentConfirmed(payment) {
-    // Store confirmed payment
+async function processQueue() {
+    if (isProcessingQueue || queue.length === 0) return;
+    isProcessingQueue = true;
+    
+    const task = queue.shift();
+    try {
+        console.log(`[Queue] Processando entrega para: ${task.customerEmail} (Fila: ${queue.length})`);
+        await resend.sendPaymentConfirmation(task.customerEmail, task.paymentData);
+    } catch (error) {
+        console.error('❌ [Queue] Erro ao enviar e-mail:', error.message);
+    } finally {
+        isProcessingQueue = false;
+        // Small delay to respect API rate limits
+        setTimeout(processQueue, 500);
+    }
+}
+
+/**
+ * Handle payment success (Confirmed or Received)
+ */
+async function handlePaymentSuccess(payment) {
+    // 1. Identify unique purchase (either by Installment Group ID or External Reference)
+    // If it's an installment, Asaas sends the same 'installment' ID for all parts.
+    const purchaseKey = payment.installment || payment.externalReference || payment.id;
+    
+    if (processedPurchases.has(purchaseKey)) {
+        console.log(`⏭️ [Deduplication] Compra ${purchaseKey} já processada. Ignorando duplicata.`);
+        return;
+    }
+
+    // Mark as processed immediately
+    processedPurchases.add(purchaseKey);
+
+    // 2. Update local state for frontend polling
     confirmedPayments.set(payment.id, {
         paymentId: payment.id,
         customerId: payment.customer,
         externalReference: payment.externalReference,
         value: payment.value,
-        billingType: payment.billingType,
-        status: 'CONFIRMED',
-        confirmedAt: new Date()
+        status: payment.status,
+        confirmedAt: new Date(),
+        processed: true
     });
 
-    await triggerDelivery(payment);
-    console.log('🎉 Acesso liberado para:', payment.externalReference);
-}
-
-/**
- * Handle payment received event (money available)
- */
-async function handlePaymentReceived(payment) {
-    const existing = confirmedPayments.get(payment.id);
-
-    if (existing) {
-        existing.status = 'RECEIVED';
-        existing.receivedAt = new Date();
-        existing.creditDate = payment.creditDate;
-        
-        // Disparo se não tiver sido processado ainda
-        if (!existing.processed) {
-            await triggerDelivery(payment);
-        }
-    } else {
-        // First notification for this payment
-        confirmedPayments.set(payment.id, {
-            paymentId: payment.id,
-            customerId: payment.customer,
-            externalReference: payment.externalReference,
-            value: payment.value,
-            billingType: payment.billingType,
-            status: 'RECEIVED',
-            receivedAt: new Date(),
-            creditDate: payment.creditDate
-        });
-        await triggerDelivery(payment);
-    }
-
-    console.log('💰 Dinheiro disponível em:', payment.creditDate);
-}
-
-/**
- * Função de disparo centralizada (sem fila)
- */
-async function triggerDelivery(payment) {
-    const existing = confirmedPayments.get(payment.id);
-    if (existing && existing.processed) return;
-
-    if (existing) existing.processed = true;
-
+    // 3. Queue for email delivery
     try {
-        // Fetch customer details to get the email
         const customer = await asaas.getCustomer(payment.customer);
-        
         if (customer && customer.email) {
-            console.log('📧 Disparando e-mail de confirmação para:', customer.email);
-            await resend.sendPaymentConfirmation(customer.email, {
-                value: payment.value,
-                billingType: payment.billingType,
-                externalReference: payment.externalReference,
-                confirmedAt: new Date()
+            console.log(`🚀 [Queue] Adicionando e-mail de ${customer.email} à fila.`);
+            queue.push({
+                customerEmail: customer.email,
+                paymentData: {
+                    value: payment.value,
+                    billingType: payment.billingType,
+                    externalReference: payment.externalReference,
+                    confirmedAt: new Date()
+                }
             });
+            processQueue();
         } else {
-            console.warn('⚠️ Cliente não encontrado ou sem e-mail para o pagamento:', payment.id);
+            console.warn('⚠️ Cliente sem e-mail para o pagamento:', payment.id);
         }
     } catch (error) {
-        console.error('❌ Erro ao processar envio de e-mail no webhook:', error);
+        console.error('❌ Erro ao buscar dados do cliente para entrega:', error.message);
     }
+}
+
+/**
+ * Handle payment confirmed or received
+ */
+async function handlePaymentConfirmed(payment) {
+    await handlePaymentSuccess(payment);
+}
+
+async function handlePaymentReceived(payment) {
+    await handlePaymentSuccess(payment);
 }
 
 /**
  * Handle payment refunded event
  */
 async function handlePaymentRefunded(payment) {
-    // Remove access
     confirmedPayments.delete(payment.id);
-
-    // Here you would:
-    // 1. Update database
-    // 2. Revoke access to the product/course
-    // 3. Send notification email
-
     console.log('🚫 Acesso revogado para:', payment.externalReference);
 }
 

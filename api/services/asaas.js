@@ -144,7 +144,7 @@ class AsaasService {
             customer: customerId,
             billingType: 'CREDIT_CARD',
             dueDate: dueDate,
-            value: Number(parseFloat(value).toFixed(2)),
+            value: Number(value),
             description: process.env.PRODUCT_NAME || 'Protocolo Gut Reset',
             externalReference: externalReference,
             remoteIp: remoteIp || '127.0.0.1',
@@ -169,7 +169,9 @@ class AsaasService {
 
         if (installments > 1) {
             paymentData.installmentCount = installments;
-            paymentData.installmentValue = (value / installments).toFixed(2);
+            paymentData.totalValue = Number(value);
+            // Remove 'value' when using installments (standard Asaas behavior for direct card)
+            delete paymentData.value;
         }
 
         // Clean null fields
